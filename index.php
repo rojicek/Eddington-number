@@ -15,11 +15,10 @@
 <?php
 
 session_start();
-//$token =  $_GET['ses'];
+$mileCoef = 1.609344;
 $token =  $_SESSION['stravatoken'];
 //echo "token: " .    $token . "<br>";
 
-//if (!isset($_GET['ses']) || (empty($_GET['ses'])))
 if (is_null($token)) 
 {
        echo "<p>To learn your <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";          
@@ -70,14 +69,16 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
        //last year
        if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
        {
-        $distances[$ix] =  $oneride["distance"];        
+        $distances[$ix] =  $oneride["distance"];   
+        $distancesStatute[$ix] = $distances[$ix] / $mileCoef;     
         $ix = $ix + 1;
       } 
       
       //all time
       if ((strtolower($oneride["type"]) == 'ride'))
        {                 
-        $distancesLife[$ixLife] =  $oneride["distance"];        
+        $distancesLife[$ixLife] =  $oneride["distance"];
+        $distancesLifeStatute[$ixLife] = $distancesLife[$ixLife] / $mileCoef;        
         $ixLife = $ixLife + 1;
       } 
       
@@ -94,9 +95,15 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   
  
  $razeni = sort($distances);
+ $razeniStatute = sort($distancesStatute);
+ 
+ 
  $razeniLife = sort($distancesLife);
+ $razeniLifeStatute = sort($distancesLifeStatute);
+ 
  
  //  echo  "##########################################################<br>";
+ //yearly metric
    for ($ix = 0; $ix <$pocetJizd; $ix++)
  {
       $distances[$ix] = floor ($distances[$ix] / 1000);
@@ -107,6 +114,19 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
         else
          break;      
  }
+
+  //yearly statute - asi by to slo spojit, protoze metricke EN bude mensi
+   for ($ix = 0; $ix <$pocetJizd; $ix++)
+ {
+      $distancesStatute[$ix] = floor ($distancesStatute[$ix] / 1000);
+      $stejnychAdelsichStatute = ($pocetJizd - $ix);
+      
+      if ($stejnychAdelsichStatute>=$distancesStatute[$ix])
+         $ednStatute = $stejnychAdelsichStatute;
+        else
+         break;      
+ }
+
 
 //echo "pocet jizd life:" . $pocetJizdLife . "<br>"; 
 
@@ -125,12 +145,35 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
          
  }
  
+  //life time  statute
+    for ($ixLife = 0; $ixLife <$pocetJizdLife; $ixLife++)
+ {
+      $distancesLifeStatute[$ixLife] = floor ($distancesLifeStatute[$ixLife] / 1000);
+      
+      $stejnychAdelsichLifeStatute = ($pocetJizdLife - $ixLife);
+         
+      
+      if ($stejnychAdelsichLifeStatute>=$distancesLifeStatute[$ixLife])
+         $ednLifeStatute = $stejnychAdelsichLifeStatute;
+        else
+         break;      
+         
+ }
+ 
  
  echo  "Your last year metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
  echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><p>"  ;
 
+  echo  "Your last year real <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $ednStatute . "</b>. <br>";
+ echo "<i>That means you rode " . $ednStatute . " miles or more at least " . $ednStatute . " times in last year as of today.</i><p>"  ;
+
+
  echo  "Your lifetime metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $ednLife . "</b>. <br>";
  echo "<i>That means you rode " . $ednLife . "km or more at least " . $ednLife . " times since your started recording on Strava.</i><p>"  ;
+ 
+  echo  "Your lifetime real <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $ednLifeStatute . "</b>. <br>";
+ echo "<i>That means you rode " . $ednLifeStatute . " miles or more at least " . $ednLifeStatute . " times since your started recording on Strava.</i><p>"  ;
+ 
  
    }//konec if autorizace
 ?>
