@@ -14,7 +14,10 @@
 <body>
 <?php
 
-$token =  $_GET['ses'];
+session_start();
+//$token =  $_GET['ses'];
+$token =  $_SESSION['stravatoken'];
+//echo "token: " .    $token . "<br>";
 
 //if (!isset($_GET['ses']) || (empty($_GET['ses'])))
 if (is_null($token)) 
@@ -53,9 +56,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  
  if (empty($rides))
  {
- // echo "<p>opoustim smycku<p>";
   break; //zadne dalsi jizdy
-  }
+}
   
   //$distances=array();
   $ix = 0;
@@ -107,8 +109,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  }
 
 //echo "pocet jizd life:" . $pocetJizdLife . "<br>"; 
- //life time
 
+ //life time
     for ($ixLife = 0; $ixLife <$pocetJizdLife; $ixLife++)
  {
       $distancesLife[$ixLife] = floor ($distancesLife[$ixLife] / 1000);
@@ -130,10 +132,6 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo  "Your lifetime metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $ednLife . "</b>. <br>";
  echo "<i>That means you rode " . $ednLife . "km or more at least " . $ednLife . " times since your started recording on Strava.</i><p>"  ;
  
-    //  echo "<p>ASI JE TO BLBE :)<p>"  ;
-  //echo "lonske datum " . $predrokem;
-  //echo "<p>";
-  // echo "konec";
    }//konec if autorizace
 ?>
           </body>
