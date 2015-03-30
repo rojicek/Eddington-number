@@ -102,6 +102,23 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  $razeniLifeStatute = sort($distancesLifeStatute);
  
  
+ //debug
+ //testovani algoritmu na rucnich datech
+ /*
+ $distances = array (1000,2000,4458,5548,10555,11523,12545,44545,23454,33414,23447,22556,1556,12458,2545,52454,7542,13545,4545,85245,12254,8876,13547, 44857, 55887, 44587);
+ $pocetJizd = sizeof ($distances);
+ $razeni = sort($distances);
+ */
+ /*
+ for ($ix = 0; $ix <$pocetJizd; $ix++)
+ {
+  echo "trip " . ($ix+1) . " - (" .($pocetJizd - $ix) . ") dist: " . floor ($distances[$ix] / 1000) . "<br>";
+ }
+ */
+ //debug
+ 
+ 
+ 
  //  echo  "##########################################################<br>";
  //yearly metric
    for ($ix = 0; $ix <$pocetJizd; $ix++)
@@ -109,8 +126,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       $distances[$ix] = floor ($distances[$ix] / 1000);
       $stejnychAdelsich = ($pocetJizd - $ix);
       
-      if ($stejnychAdelsich>=$distances[$ix])
-         $edn = $stejnychAdelsich;
+      if ($stejnychAdelsich>=$distances[$ix])         
+         $edn = $distances[$ix];
         else
          break;      
  }
@@ -122,13 +139,13 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       $stejnychAdelsichStatute = ($pocetJizd - $ix);
       
       if ($stejnychAdelsichStatute>=$distancesStatute[$ix])
-         $ednStatute = $stejnychAdelsichStatute;
+         $ednStatute = $distancesStatute[$ix];
         else
          break;      
  }
 
 
-//echo "pocet jizd life:" . $pocetJizdLife . "<br>"; 
+// echo "pocet jizd life:" . $pocetJizdLife . "<br>"; 
 
  //life time
     for ($ixLife = 0; $ixLife <$pocetJizdLife; $ixLife++)
@@ -139,7 +156,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
      // echo "ride #". $ixLife . " left=" .   $stejnychAdelsichLife . " delka=" . $distancesLife[$ixLife] . "<br>" ;
       
       if ($stejnychAdelsichLife>=$distancesLife[$ixLife])
-         $ednLife = $stejnychAdelsichLife;
+         $ednLife = $distancesLife[$ixLife];
         else
          break;      
          
@@ -154,7 +171,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
          
       
       if ($stejnychAdelsichLifeStatute>=$distancesLifeStatute[$ixLife])
-         $ednLifeStatute = $stejnychAdelsichLifeStatute;
+         $ednLifeStatute = $distancesLifeStatute[$ixLife];
         else
          break;      
          
