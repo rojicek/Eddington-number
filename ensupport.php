@@ -1,5 +1,6 @@
 <?php
 
+//Ride class
   
 class Ride {
 	public $date;
