@@ -14,8 +14,9 @@
 <body>
 <?php
 
+//echo "JE TO ROZBITE!!<p>";
 
-include 'enfce.php';
+include 'ensupport.php';
 
 
 session_start();
@@ -39,6 +40,7 @@ if (is_null($token))
 
 
  
+ 
  //get rides
  
  $page = 1;
@@ -61,8 +63,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  //create array fof lifes (all live / last year)
  //metric and statute -> 4 arrays
  //can be more pages (max 200 rides per page by Strava)
-  $ix = 0;
-  $ixLife = 0;
+
  foreach ($rides as $oneride)
   {
      
@@ -71,17 +72,16 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
        //last year
        if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
        {
-        $distances[$ix] =  floor($oneride["distance"]/1000);   
-        $distancesStatute[$ix] = floor($oneride["distance"] / $mileCoef / 1000);     
-        $ix = $ix + 1;
+        $lastYearRides[] = new Ride("2000-01-01", $oneride["distance"]);
+        $lastYearRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
+              
       } 
       
       //all time
       if ((strtolower($oneride["type"]) == 'ride'))
        {                 
-        $distancesLife[$ixLife] =  floor($oneride["distance"]/1000);
-        $distancesLifeStatute[$ixLife] = floor($oneride["distance"] / $mileCoef / 1000);       
-        $ixLife = $ixLife + 1;
+        $lifetimeRides[] = new Ride("2000-01-01", $oneride["distance"]);
+        $lifetimeRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
       } 
       
   }
@@ -89,15 +89,15 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   $page=$page + 1;
 }
  
+
+ list ($edn, $nextEDdistance, $nextEDcount) =  GetEddingtonNumber($lastYearRides);
+ list ($ednStatute, $nextEDdistance, $nextEDcount) =  GetEddingtonNumber($lastYearRidesStatute); 
  
-  $edn  = GetEN($distances);
-  $ednStatute  = GetEN($distancesStatute);
-  $ednLife  = GetEN($distancesLife);
-  $ednLifeStatute  = GetEN($distancesLifeStatute);
+ list ($ednLife, $nextEDdistance, $nextEDcount) =  GetEddingtonNumber($lifetimeRides);
+ list ($ednLifeStatute, $nextEDdistance, $nextEDcount) =  GetEddingtonNumber($lifetimeRidesStatute); 
  
  
- 
- 
+    
  
  echo  "Your last year metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
  echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><p>"  ;
@@ -111,7 +111,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  
   echo  "Your lifetime real <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $ednLifeStatute . "</b>. <br>";
  echo "<i>That means you rode " . $ednLifeStatute . " miles or more at least " . $ednLifeStatute . " times since your started recording on Strava.</i><p>"  ;
- 
+           
  
    }//konec if autorizace
 ?>
