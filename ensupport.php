@@ -89,9 +89,9 @@ function GetEddingtonNumber($rides)
       }
    }
    
-   //kdyz uz mam splneno
-   if ($missingRides < 0)
-      $missingRides = 0;
+   //kdyz uz mam splneno  - uz zbyecne
+   //if ($missingRides < 0)
+    //  $missingRides = 0;
    
    return   $missingRides;
       }
