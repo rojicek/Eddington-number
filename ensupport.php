@@ -1,5 +1,5 @@
 <?php
-
+ 
 //Ride class
   
 class Ride {
@@ -19,41 +19,83 @@ class Ride {
 	}
 }
 
-
+ 
+ 
 function GetEddingtonNumber($rides)
 {
+   //minedn pro hledani dalsi jizdy - edn musi byt vetsi nez tohle cislo
 	 usort($rides, array("Ride", "CompareRides"));
    
    
-/*   //debug
+   //debug   
+   /*
    $pocetJizd = sizeof  ($rides); 
    for ($ix = 0; $ix <$pocetJizd; $ix++)
     echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $rides[$ix]->distanceKM . " km<br>";
-   echo "<p>";  
+   echo "-----------------------<p>";
+   */  
     //konec debug
-	*/
- 
-    
-	$i = sizeof($rides);  
- // echo "rides = " . $i . "<br>";
+	   
      
-	foreach ($rides as $ride) 
-	{    
-   // echo "ride=" . $ride->distanceKM . " km; i=" . $i . "<br>"; 
-		if ($ride->distanceKM < $i)     			            
-      $i--; 
-      else
-      break;                
-	}
-  
-//	  echo "i = " . $i . "<br>";  
- //   echo "<p>"; 
-    
-  //debug
-  $nextEDdistance = -1;
-  $nextEDcount = -1;
-  
-  return array ($i, $nextEDdistance, $nextEDcount);
-}
+   //abych poznal chybu
+  $edn = -1;  
+  $pocetJizd = sizeof  ($rides); 
+ 
+           
+ //debug
+ //for ($i = 0; $i < $pocetJizd; $i++) 
+ //echo "i=" . ($i+1) . " (". ($pocetJizd - $i) . ") " .  $rides[$i]->distanceKM . " km<br>";
+ //echo "<p>";
+                       	 
+           
+  //najdu skutecne EDN
+  for ($i = 0; $i< $pocetJizd; $i++)
+  {  
+   $stejnychAdelsich =  $pocetJizd - $i;  
+    if ($stejnychAdelsich >= $rides[$i]->distanceKM) 
+         {                             
+           $edn = $rides[$i]->distanceKM; //aktualni EDN 
+   //        echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distanceKM . " km -> EDN= ".$edn."<br>";            
+        }
+        else
+         break;
+  }
+  return $edn;
+}     
+
+
+ function PlanEddingtonNumber($rides, $planEDN)
+{
+   //sice tridim opakovane, ale pokud uz je pole setridene, tak to asi bude velmi rychle
+	 usort($rides, array("Ride", "CompareRides"));
+   
+   $missingRides = $planEDN; //max pokud nemam jeste nic  
+   $pocetJizd = sizeof  ($rides); 
+ 
+ //hledam pocet jizd pro planovane EDN
+   for ($i = 0; $i< $pocetJizd; $i++)
+   { 
+      $stejnychAdelsich =  $pocetJizd - $i;  
+      
+      //echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distanceKM . " km <br>";
+      //hledam prvni jizdu, ktera je stejna nebo delsi nez plan
+      if  ($rides[$i]->distanceKM >= $planEDN)      
+      {
+       //muzu tu byt jen jednou!             
+       $missingRides =  $planEDN -  $stejnychAdelsich;
+      // echo "I AM IN <br>";
+       //echo "missing rides =".$missingRides." (" . $planEDN . "-" . $stejnychAdelsich .") <br>";
+       break;
+      }
+   }
+   
+   //kdyz uz mam splneno
+   if ($missingRides < 0)
+      $missingRides = 0;
+   
+   return   $missingRides;
+      }
+      
+
   
 ?>
