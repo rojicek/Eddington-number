@@ -68,6 +68,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  //metric and statute -> 4 arrays
  //can be more pages (max 200 rides per page by Strava)
 
+  //OK - ale pro sledovane muzu vypsat max 200 poslednich aktivit CELKEM -> k nicemu
  foreach ($rides as $oneride)
   {
      
@@ -82,6 +83,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
         if ($atletId == (int)1847155)
         {    //valenta if   
         
+                \
                            
        //last year
        if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
