@@ -47,7 +47,11 @@ if (is_null($token))
 
  while (true)
  {
- $url = "https://www.strava.com/api/v3/activities?per_page=200&page=".$page."&access_token=" . $token;
+ //pridano pro vsechny, ktere sleduji !
+ $url = "https://www.strava.com/api/v3/activities/following?per_page=200&page=".$page."&access_token=" . $token;
+ 
+ //echo    $url . "<p>";
+ 
  $result = file_get_contents($url);
  $rides = json_decode ($result, true);
  
@@ -67,22 +71,34 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  foreach ($rides as $oneride)
   {
      
+    
        $rideDate =  strtotime($oneride["start_date_local"]);
        
+       //valenta IF       
+       $atlet =  $oneride["athlete"];  
+       $atletId =   $atlet["id"];
+       
+        echo "vsichni in " .  $atletId . " <br>";                                  
+        if ($atletId == (int)1847155)
+        {    //valenta if   
+        
+                           
        //last year
        if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
        {
         $lastYearRides[] = new Ride("2000-01-01", $oneride["distance"]);
-        $lastYearRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
+        $lastYearRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);        
               
       } 
       
       //all time
       if ((strtolower($oneride["type"]) == 'ride'))
-       {                 
+       {    
+            
         $lifetimeRides[] = new Ride("2000-01-01", $oneride["distance"]);
         $lifetimeRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
       } 
+      } //valenta if
       
   }
   
@@ -109,11 +125,11 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       $lastYearRides[] = new Ride("2000-01-01", 31589);
     */
    //debug - all print
-   //	 usort($lifetimeRides, array("Ride", "CompareRides"));               
-   //$pocetJizd = sizeof  ($lifetimeRides); 
-   //for ($ix = 0; $ix <$pocetJizd; $ix++)
-    //echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km<br>";
-   //echo "-----------------------<p>";
+  usort($lifetimeRides, array("Ride", "CompareRides"));               
+   $pocetJizd = sizeof  ($lifetimeRides); 
+   for ($ix = 0; $ix <$pocetJizd; $ix++)
+    echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km<br>";
+   echo "-----------------------<p>";
    //end of debug
      
    
