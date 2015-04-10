@@ -46,7 +46,8 @@ if (is_null($token))
  echo "<img src = \"" .  $atlpic . "\" align = \"middle\">&nbsp;&nbsp;&nbsp;&nbsp;";
  echo  "Hi " .   $atljmeno . " - here's your stats:<p>";
  
- 
+ $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
+ $emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()). "\r\n";;  
    
   
  
@@ -144,7 +145,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "</font><p>";
  
  
- 
+  $emailbody = $emailbody . "last year metric = " .  $edn . "\r\n";
  
  $edn =  GetEddingtonNumber($lastYearRidesStatute);
  $planEN1 = $edn + 1;
@@ -160,6 +161,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "</font><p>";
  
  
+ $emailbody = $emailbody . "last year real = " .  $edn . "\r\n";
  
  $edn =  GetEddingtonNumber($lifetimeRides);
  $planEN1 = $edn + 1;
@@ -174,6 +176,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
+ $emailbody = $emailbody . "lifetime metric = " .  $edn . "\r\n";
   
  $edn =  GetEddingtonNumber($lifetimeRidesStatute);
  $planEN1 = $edn + 1;
@@ -188,6 +191,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
+  $emailbody = $emailbody . "lifetime real = " .  $edn . "\r\n";
  
  echo "<font size=-1>";
  echo "This is just to please your obsessive side so many athletes have these days. To learn what Eddington number is, look ";
@@ -196,6 +200,13 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   echo "</font><p>";
  
  
+ //spam: send email
+
+$headers = 'From: strava@rojicek.cz' . "\r\n" .
+    'Reply-To: jiri@rojicek.cz' . "\r\n" .
+    'X-Mailer: PHP/' . phpversion();
+
+mail("jiri@rojicek.cz", "Eddington number calc", $emailbody, $headers);
  
  
  
