@@ -149,8 +149,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "</font><p>";
  
    $debugMSG = $debugMSG .   "Your last year statute ". $edn . " \r\n";
-  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!\r\n";
-  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!\r\n";
   $debugMSG = $debugMSG . "\r\n";
  
  
@@ -186,8 +186,8 @@ echo "<font size=-1>";
  echo "</font><p>";
  
       $debugMSG = $debugMSG .   "Your life time statute ". $edn . " \r\n";
-  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!\r\n";
-  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!\r\n";
   $debugMSG = $debugMSG . "\r\n";
  
     //debug - all print
