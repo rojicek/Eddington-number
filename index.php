@@ -37,7 +37,17 @@ if (is_null($token))
  $url = "https://www.strava.com/api/v3/athlete?access_token=" . $token;
  $result = file_get_contents($url);
  $athlete = json_decode ($result, true);
-    
+  
+ //get athlete info 
+ $atljmeno =  $athlete["firstname"];// . " " . $athlete["lastname"];
+ $atlpic =  $athlete["profile_medium"];
+ 
+ 
+ echo "<img src = \"" .  $atlpic . "\" align = \"middle\">&nbsp;&nbsp;&nbsp;&nbsp;";
+ echo  "Hi " .   $atljmeno . " - here's your stats:<p>";
+ 
+ 
+   
   
  
  //get rides
@@ -126,9 +136,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  $missingRides1 = PlanEddingtonNumber  ($lastYearRides, $planEN1);
  $missingRides2 = PlanEddingtonNumber  ($lastYearRides, $planEN2);
  
- echo  "Your last year metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
- echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><br>"  ;
+ echo  "Your last year metric Eddington number is <b>". $edn . "</b>. <br>";
  echo "<font size=-1>";
+ echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><br>"  ;
  echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!<br>";
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
@@ -142,9 +152,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  $missingRides1 = PlanEddingtonNumber  ($lastYearRidesStatute, $planEN1);
  $missingRides2 = PlanEddingtonNumber  ($lastYearRidesStatute, $planEN2);
  
- echo  "Your last year real <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
- echo "<i>That means you rode " . $edn . " miles or more at least " . $edn . " times in last year as of today.</i><br>"  ;
+ echo  "Your last year real Eddington number is <b>". $edn . "</b>. <br>";
  echo "<font size=-1>";
+ echo "<i>That means you rode " . $edn . " miles or more at least " . $edn . " times in last year as of today.</i><br>"  ; 
  echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!<br>";
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
@@ -157,9 +167,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  $missingRides1 = PlanEddingtonNumber  ($lifetimeRides, $planEN1);
  $missingRides2 = PlanEddingtonNumber  ($lifetimeRides, $planEN2);
  
- echo  "Your lifetime metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
- echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ;
+ echo  "Your lifetime metric Eddington number is <b>". $edn . "</b>. <br>";
  echo "<font size=-1>";
+ echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ; 
  echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!<br>";
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
@@ -171,12 +181,21 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  $missingRides1 = PlanEddingtonNumber  ($lifetimeRidesStatute, $planEN1);
  $missingRides2 = PlanEddingtonNumber  ($lifetimeRidesStatute, $planEN2);
  
- echo  "Your lifetime real <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
+ echo  "Your lifetime realEddington number is <b>". $edn . "</b>. <br>";
+ echo "<font size=-1>";
  echo "<i>That means you rode " . $edn . " miles or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ;
-echo "<font size=-1>";
  echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!<br>";
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
+ 
+ 
+ echo "<font size=-1>";
+ echo "This is just to please your obsessive side so many athletes have these days. To learn what Eddington number is, look ";
+ echo "<a href=\"http://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling\">here</a> or ";
+ echo "<a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">here</a>.";
+  echo "</font><p>";
+ 
+ 
  
  
  
