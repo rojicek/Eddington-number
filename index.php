@@ -70,7 +70,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
        $rideDate =  strtotime($oneride["start_date_local"]);
        
        //last year
-       if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
+       //if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
+       if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'run'))
        {
         $lastYearRides[] = new Ride("2000-01-01", $oneride["distance"]);
         $lastYearRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
@@ -78,7 +79,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       } 
       
       //all time
-      if ((strtolower($oneride["type"]) == 'ride'))
+      //if ((strtolower($oneride["type"]) == 'ride'))
+      if ((strtolower($oneride["type"]) == 'run'))
        {                 
         $lifetimeRides[] = new Ride("2000-01-01", $oneride["distance"]);
         $lifetimeRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
@@ -90,15 +92,26 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
 }
  
  
- /*
-  $lastYearRides[] = new Ride("2000-01-01", 10589);
-  $lastYearRides[] = new Ride("2000-01-01", 15589);
-  $lastYearRides[] = new Ride("2000-01-01", 13589);
-  $lastYearRides[] = new Ride("2000-01-01", 22589);
-  $lastYearRides[] = new Ride("2000-01-01", 55589);
-  $lastYearRides[] = new Ride("2000-01-01", 40589);
-  $lastYearRides[] = new Ride("2000-01-01", 31589);
-  $lastYearRides[] = new Ride("2000-01-01", 28589);
+//rucne David 
+   /*
+  unset($lastYearRides); 
+  $lastYearRides[] = new Ride("2000-01-01", 15104);
+  $lastYearRides[] = new Ride("2000-01-01", 25819);
+  $lastYearRides[] = new Ride("2000-01-01", 26124);
+  $lastYearRides[] = new Ride("2000-01-01", 26665);
+  $lastYearRides[] = new Ride("2000-01-01", 30000);
+  $lastYearRides[] = new Ride("2000-01-01", 38000);
+  $lastYearRides[] = new Ride("2000-01-01", 58263);
+     */
+     //debug - all print
+  // 	 usort($lastYearRides, array("Ride", "CompareRides"));               
+   //$pocetJizd = sizeof  ($lastYearRides); 
+   //for ($ix = 0; $ix <$pocetJizd; $ix++)
+    //echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km<br>";
+   //echo "-----------------------<p>";
+   //end of debug
+   
+  /*$lastYearRides[] = new Ride("2000-01-01", 28589);
   $lastYearRides[] = new Ride("2000-01-01", 17589);
   $lastYearRides[] = new Ride("2000-01-01", 5589);
   $lastYearRides[] = new Ride("2000-01-01", 9589);
