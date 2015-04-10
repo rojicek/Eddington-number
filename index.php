@@ -70,7 +70,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
        $rideDate =  strtotime($oneride["start_date_local"]);
        
        //last year
-       if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
+       //if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
+       if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'run'))
        {
         $lastYearRides[] = new Ride("2000-01-01", $oneride["distance"]);
         $lastYearRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
@@ -78,7 +79,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       } 
       
       //all time
-      if ((strtolower($oneride["type"]) == 'ride'))
+      //if ((strtolower($oneride["type"]) == 'ride'))
+      if ((strtolower($oneride["type"]) == 'run'))
        {                 
         $lifetimeRides[] = new Ride("2000-01-01", $oneride["distance"]);
         $lifetimeRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
@@ -90,15 +92,26 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
 }
  
  
- /*
-  $lastYearRides[] = new Ride("2000-01-01", 10589);
-  $lastYearRides[] = new Ride("2000-01-01", 15589);
-  $lastYearRides[] = new Ride("2000-01-01", 13589);
-  $lastYearRides[] = new Ride("2000-01-01", 22589);
-  $lastYearRides[] = new Ride("2000-01-01", 55589);
-  $lastYearRides[] = new Ride("2000-01-01", 40589);
-  $lastYearRides[] = new Ride("2000-01-01", 31589);
-  $lastYearRides[] = new Ride("2000-01-01", 28589);
+//rucne David 
+   /*
+  unset($lastYearRides); 
+  $lastYearRides[] = new Ride("2000-01-01", 15104);
+  $lastYearRides[] = new Ride("2000-01-01", 25819);
+  $lastYearRides[] = new Ride("2000-01-01", 26124);
+  $lastYearRides[] = new Ride("2000-01-01", 26665);
+  $lastYearRides[] = new Ride("2000-01-01", 30000);
+  $lastYearRides[] = new Ride("2000-01-01", 38000);
+  $lastYearRides[] = new Ride("2000-01-01", 58263);
+     */
+     //debug - all print
+  // 	 usort($lastYearRides, array("Ride", "CompareRides"));               
+   //$pocetJizd = sizeof  ($lastYearRides); 
+   //for ($ix = 0; $ix <$pocetJizd; $ix++)
+    //echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km<br>";
+   //echo "-----------------------<p>";
+   //end of debug
+   
+  /*$lastYearRides[] = new Ride("2000-01-01", 28589);
   $lastYearRides[] = new Ride("2000-01-01", 17589);
   $lastYearRides[] = new Ride("2000-01-01", 5589);
   $lastYearRides[] = new Ride("2000-01-01", 9589);
@@ -108,16 +121,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
    $lastYearRides[] = new Ride("2000-01-01", 11589);
       $lastYearRides[] = new Ride("2000-01-01", 31589);
     */
-   //debug - all print
-   //	 usort($lifetimeRides, array("Ride", "CompareRides"));               
-   //$pocetJizd = sizeof  ($lifetimeRides); 
-   //for ($ix = 0; $ix <$pocetJizd; $ix++)
-    //echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km<br>";
-   //echo "-----------------------<p>";
-   //end of debug
-     
+ 
    
-   
+    $debugMSG  = "";
    
   
  $edn =  GetEddingtonNumber($lastYearRides);
@@ -126,6 +132,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  $missingRides1 = PlanEddingtonNumber  ($lastYearRides, $planEN1);
  $missingRides2 = PlanEddingtonNumber  ($lastYearRides, $planEN2);
  
+ 
+ 
  echo  "Your last year metric <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> is <b>". $edn . "</b>. <br>";
  echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><br>"  ;
  echo "<font size=-1>";
@@ -133,7 +141,11 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
- 
+  $debugMSG = $debugMSG .   "Your last year metric ". $edn . " \r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!\r\n";
+  $debugMSG = $debugMSG . "\r\n";
+
  
  
  $edn =  GetEddingtonNumber($lastYearRidesStatute);
@@ -149,6 +161,10 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
+   $debugMSG = $debugMSG .   "Your last year statute ". $edn . " \r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!\r\n";
+  $debugMSG = $debugMSG . "\r\n";
  
  
  $edn =  GetEddingtonNumber($lifetimeRides);
@@ -164,6 +180,10 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
+   $debugMSG = $debugMSG .   "Your life time metric ". $edn . " \r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!\r\n";
+  $debugMSG = $debugMSG . "\r\n";
   
  $edn =  GetEddingtonNumber($lifetimeRidesStatute);
  $planEN1 = $edn + 1;
@@ -178,7 +198,35 @@ echo "<font size=-1>";
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
+      $debugMSG = $debugMSG .   "Your life time statute ". $edn . " \r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!\r\n";
+  $debugMSG = $debugMSG .    "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!\r\n";
+  $debugMSG = $debugMSG . "\r\n";
  
+    //debug - all print
+   $to      = "jiri@rojicek.cz";
+$subject = "Strava summary";
+$message = "Vypis ze Strava \r\n";
+$headers = "From: strava@rojicek.cz" . " \r\n" .
+    "Reply-To: jiri@rojicek.cz" . "\r\n" .
+    "X-Mailer: PHP/" . phpversion();
+
+
+   	 usort($lifetimeRides, array("Ride", "CompareRides"));               
+     $pocetJizd = sizeof  ($lifetimeRides);
+     $message = $message . 'pocet jizd:' . $pocetJizd . "\r\n"; 
+     for ($ix = 0; $ix <$pocetJizd; $ix++)
+       $message = $message .  "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " m\r\n";
+   //echo "-----------------------<p>";
+   
+    $message = $message . "-------------------\r\n\r\n";
+    $message = $message .  $debugMSG;
+    $message = $message . "-------------------\r\n\r\n";
+    
+   //end of debug
+   
+mail($to, $subject, $message, $headers);    
+
  
  
    }//konec if autorizace

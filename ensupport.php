@@ -43,7 +43,7 @@ function GetEddingtonNumber($rides)
  
            
  //debug
- //for ($i = 0; $i < $pocetJizd; $i++) 
+// for ($i = 0; $i < $pocetJizd; $i++) 
  //echo "i=" . ($i+1) . " (". ($pocetJizd - $i) . ") " .  $rides[$i]->distanceKM . " km<br>";
  //echo "<p>";
                        	 
@@ -52,14 +52,23 @@ function GetEddingtonNumber($rides)
   for ($i = 0; $i< $pocetJizd; $i++)
   {  
    $stejnychAdelsich =  $pocetJizd - $i;  
+   //echo "budu porovnavat jestli " .$stejnychAdelsich .  ">=" . $rides[$i]->distanceKM .   "<br>";
     if ($stejnychAdelsich >= $rides[$i]->distanceKM) 
          {                             
            $edn = $rides[$i]->distanceKM; //aktualni EDN 
-   //        echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distanceKM . " km -> EDN= ".$edn."<br>";            
+      //     echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distanceKM . " km -> EDN= ".$edn."<br>";            
         }
         else
+        {
+         if ($edn == -1)
+          $edn = $stejnychAdelsich; //mam vsechny jizdy delsi nez pocet jizd: EDN urcuje pocet jizd
          break;
+        }
   }
+  
+  if ($edn < 0)   //nemam zadne jizdy
+      $edn = 0;
+      
   return $edn;
 }     
 
@@ -89,9 +98,9 @@ function GetEddingtonNumber($rides)
       }
    }
    
-   //kdyz uz mam splneno  - uz zbyecne
-   //if ($missingRides < 0)
-    //  $missingRides = 0;
+   
+   if ($missingRides < 0)
+      $missingRides = 0;
    
    return   $missingRides;
       }
