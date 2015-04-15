@@ -7,7 +7,7 @@ $findme   = '.php';
 $pos = strpos($redirectUrl, $findme);
 $redirectUrlR = substr($redirectUrl, 0, $pos+4);  //4 = len(.php)
 
- echo   $redirectUrlR . "<br>";
+ //echo   $redirectUrlR . "<br>";
  
 
             

@@ -1,12 +1,19 @@
+
 <!DOCTYPE html>
 <html> 
-<head> 
 
+
+<head> 
 <title>Eddington number</title>
 <meta charset="UTF-8">
 
 <link rel="stylesheet" type="text/css" href="ed.css">
 
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    
+  
+ 
 
 
     </head>
@@ -19,8 +26,10 @@
 include 'ensupport.php';
 
 
+
 session_start();
 $mileCoef = 1.609344;
+$planAhead = 15;
 $token =  $_SESSION['stravatoken'];
 //echo "token: " .    $token . "<br>";
 
@@ -100,30 +109,64 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   $page=$page + 1;
 }
  
+    /*
  
- /*
-  $lastYearRides[] = new Ride("2000-01-01", 10589);
-  $lastYearRides[] = new Ride("2000-01-01", 15589);
-  $lastYearRides[] = new Ride("2000-01-01", 13589);
-  $lastYearRides[] = new Ride("2000-01-01", 22589);
-  $lastYearRides[] = new Ride("2000-01-01", 55589);
-  $lastYearRides[] = new Ride("2000-01-01", 40589);
-  $lastYearRides[] = new Ride("2000-01-01", 31589);
-  $lastYearRides[] = new Ride("2000-01-01", 28589);
-  $lastYearRides[] = new Ride("2000-01-01", 17589);
-  $lastYearRides[] = new Ride("2000-01-01", 5589);
-  $lastYearRides[] = new Ride("2000-01-01", 9589);
-  $lastYearRides[] = new Ride("2000-01-01", 19589);
-  $lastYearRides[] = new Ride("2000-01-01", 39589);
-      
-   $lastYearRides[] = new Ride("2000-01-01", 11589);
-      $lastYearRides[] = new Ride("2000-01-01", 31589);
-    */
+   $lastYearRides = "";
+   
+  $lastYearRides[] = new Ride("2000-01-01", 4444);
+  $lastYearRides[] = new Ride("2000-01-01", 5444);
+  $lastYearRides[] = new Ride("2000-01-01", 6000);  
+  $lastYearRides[] = new Ride("2000-01-01", 7000);
+  
+  $lastYearRides[] = new Ride("2000-01-01", 9000);
+  $lastYearRides[] = new Ride("2000-01-01", 9000);
+  $lastYearRides[] = new Ride("2000-01-01", 9000);
+  $lastYearRides[] = new Ride("2000-01-01", 9000);
+  $lastYearRides[] = new Ride("2000-01-01", 9000);
+  
+  $lastYearRides[] = new Ride("2000-01-01", 10000);
+  $lastYearRides[] = new Ride("2000-01-01", 10000);
+  
+    $lastYearRides[] = new Ride("2000-01-01", 13000);
+  $lastYearRides[] = new Ride("2000-01-01", 13000);
+  
+  $lastYearRides[] = new Ride("2000-01-01", 15000);
+    $lastYearRides[] = new Ride("2000-01-01", 15000);
+    $lastYearRides[] = new Ride("2000-01-01", 16000);
+    
+        $lastYearRides[] = new Ride("2000-01-01", 17000);
+  $lastYearRides[] = new Ride("2000-01-01", 17000);
+    
+  
+  $lastYearRides[] = new Ride("2000-01-01", 18800);
+  $lastYearRides[] = new Ride("2000-01-01", 22000);
+  $lastYearRides[] = new Ride("2000-01-01", 23000);
+  $lastYearRides[] = new Ride("2000-01-01", 23000);
+  $lastYearRides[] = new Ride("2000-01-01", 24000);
+  $lastYearRides[] = new Ride("2000-01-01", 24000);
+  $lastYearRides[] = new Ride("2000-01-01", 25000);
+  $lastYearRides[] = new Ride("2000-01-01", 27000);
+  $lastYearRides[] = new Ride("2000-01-01", 28000);
+     */ 
+     
    //debug - all print
-   //	 usort($lifetimeRides, array("Ride", "CompareRides"));               
-   //$pocetJizd = sizeof  ($lifetimeRides); 
-   //for ($ix = 0; $ix <$pocetJizd; $ix++)
+   usort($lifetimeRides, array("Ride", "CompareRides")); 
+   $emailbody = $emailbody . "Vsechny jizdy\r\n";               
+   $pocetJizd = sizeof  ($lifetimeRides); 
+   for ($ix = 0; $ix <$pocetJizd; $ix++)
     //echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km<br>";
+    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km\r\n";
+    $emailbody = $emailbody . "konec vsech jizd\r\n\r\n";
+    
+    
+   usort($lastYearRides, array("Ride", "CompareRides")); 
+   $emailbody = $emailbody . "Last year jizdy\r\n";               
+   $pocetJizd = sizeof  ($lastYearRides); 
+   for ($ix = 0; $ix <$pocetJizd; $ix++)
+  //  echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km<br>";
+    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km\r\n";
+    $emailbody = $emailbody . "konec last year jizd\r\n";
+    
    //echo "-----------------------<p>";
    //end of debug
      
@@ -141,7 +184,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "<font size=-1>";
  echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><br>"  ;
  echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!<br>";
- echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
+  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
  
@@ -177,6 +220,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "</font><p>";
  
  $emailbody = $emailbody . "lifetime metric = " .  $edn . "\r\n";
+ $ednGrafStart =   $edn;
   
  $edn =  GetEddingtonNumber($lifetimeRidesStatute);
  $planEN1 = $edn + 1;
@@ -192,6 +236,66 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "</font><p>";
  
   $emailbody = $emailbody . "lifetime real = " .  $edn . "\r\n";
+  
+  //graf
+  
+    //pridam graf pro lifetime EDN
+  //$grafData = [];
+  
+  for ($i = $ednGrafStart; $i <= $ednGrafStart+$planAhead; $i++)
+  {
+     $gedn =  PlanEddingtonNumber  ($lifetimeRides, $i);
+     $dist[$i-$ednGrafStart] = $i;
+     $edgTogo[$i-$ednGrafStart] = $gedn;
+    // echo " for " . $dist[$i-$ednGrafStart] . " ride "  . $edgTogo[$i-$ednGrafStart] . "<br>";
+    
+  }
+    
+ 
+ 
+ ?>     
+     <script type="text/javascript">
+    
+    
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Distance',  'Rides to go' ],
+          <?php
+          
+           for ($i = $ednGrafStart; $i <= $ednGrafStart+$planAhead; $i++)
+           {
+            echo "['" . $dist[$i-$ednGrafStart] . "', " .  $edgTogo[$i-$ednGrafStart] . "],";            
+            }
+           
+          ?>
+          
+        ]);
+
+        var options = {
+          title: 'Your lifetime Eddington number plans',
+          titlePosition: 'in',
+          vAxis: {title: 'Rides to go'},
+          hAxis: {title: 'kilometers'},
+          isStacked: true,
+          legend: { position: "none" },        
+        };
+
+        var chart = new google.visualization.SteppedAreaChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      
+      }
+      
+      
+    </script>                
+
+  <?php
+ 
+ //echo "<center> <b>Your lifetime Eddington number plans</b> </center>"; 
+ echo  "<div id=\"chart_div\" style=\"width: 800px; height: 600px;\"></div>";
+ //echo "<script>  javascript:drawChart(20); </script>";
  
  echo "<font size=-1>";
  echo "This is just to please your obsessive side so many athletes have these days. To learn what Eddington number is, look ";
@@ -214,3 +318,4 @@ mail("jiri@rojicek.cz", "Eddington number calc", $emailbody, $headers);
    }//konec if autorizace
 ?>
           </body>
+          
