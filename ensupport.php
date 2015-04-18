@@ -26,26 +26,19 @@ function GetEddingtonNumber($rides)
    //minedn pro hledani dalsi jizdy - edn musi byt vetsi nez tohle cislo
 	 usort($rides, array("Ride", "CompareRides"));
    
+     $edn = 0;  
+  $pocetJizd = sizeof  ($rides); 
    
    //debug   
-//   $pocetJizd = sizeof  ($rides); 
- //  for ($ix = 0; $ix <$pocetJizd; $ix++)
-  //  echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $rides[$ix]->distanceKM . " km<br>";
-  // echo "-----------------------<p>";
+   $pocetJizd = sizeof  ($rides); 
+   for ($ix = 0; $ix <$pocetJizd; $ix++)
+    echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $rides[$ix]->distanceKM . " km/miles<br>";
+   echo "-----------------------<p>";
      
+      echo "extra vypis = ". ($rides[0]->distanceKM+0) . "<br>"; 
     //konec debug
 	   
      
-   //abych poznal chybu
-  $edn = 0;  
-  $pocetJizd = sizeof  ($rides); 
-//  echo "pocet jizd =  " .   $pocetJizd . "<br>";
- 
-           
- //debug
-// for ($i = 0; $i < $pocetJizd; $i++) 
- //echo "i=" . ($i+1) . " (". ($pocetJizd - $i) . ") " .  $rides[$i]->distanceKM . " km<br>";
- //echo "<p>";
     
     // echo "posledni=" . $rides[$pocetJizd-1]->distanceKM . "<p>";
 
@@ -54,17 +47,20 @@ function GetEddingtonNumber($rides)
   for ($i = 0; $i< $pocetJizd; $i++)
   {  
    $stejnychAdelsich =  $pocetJizd - $i;  
- //  echo "budu porovnavat jestli " .$stejnychAdelsich .  ">=" . $rides[$i]->distanceKM .   " (act EDN=". $edn .")<br>";
-    if ($stejnychAdelsich >= $rides[$i]->distanceKM) 
+   echo "budu porovnavat jestli " .$stejnychAdelsich .  ">=" . ($rides[$i]->distanceKM + 0) .   " (act EDN=". $edn .")<br>";
+    if ($stejnychAdelsich >= ($rides[$i]->distanceKM+0)) 
          {                             
-            $edn = $rides[$i]->distanceKM; //aktualni EDN 
-   //         echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distanceKM . " km -> EDN= ".$edn."<br>";            
+            $edn = ($rides[$i]->distanceKM+0); //aktualni EDN
+            echo "im im : extra edn = ". $edn . "<br>";
+            
+            echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distanceKM . " km -> EDN= ".$edn."<br>";            
         }
         else
         {
         //sikora bug: dalsi jizda uz nejde pouzit, ale predchozim kvalifikuji na vyssi edn
-        $delkaDalsi =  $rides[$i]->distanceKM - 1;
-    //    echo "zkus "  . $edn  . " < ". $delkaDalsi . " km; pokud jo, tak i=".($pocetJizd - $i)."<br>";
+        //NEFUNGUJE s 1 jizdou!!
+        $delkaDalsi =  ($rides[$i]->distanceKM - 1);
+        echo "zkus "  . $edn  . " < ". $delkaDalsi . " km; pokud jo, tak i=".($pocetJizd - $i)."<br>";
        
         if ($edn < $delkaDalsi)
                $edn = $pocetJizd - $i;
@@ -73,6 +69,7 @@ function GetEddingtonNumber($rides)
         }
   }
   
+   echo "edn = ". $edn . "<p>";
   if ($edn < 0)   //nemam zadne jizdy
       $edn = 0;
      

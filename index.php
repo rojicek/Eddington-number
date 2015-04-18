@@ -109,9 +109,16 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   $page=$page + 1;
 }
  
-    /*
+    
  
-   $lastYearRides = "";
+   //$lastYearRides = "";
+   unset($lastYearRides);
+   $lastYearRides =array();
+   unset($lifetimeRides);
+   $lifetimeRides = array();
+   unset($lifetimeRidesStatute);
+   $lifetimeRidesStatute = array();
+   //$foo = array();
    
   $lastYearRides[] = new Ride("2000-01-01", 4444);
   $lastYearRides[] = new Ride("2000-01-01", 5444);
@@ -147,7 +154,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   $lastYearRides[] = new Ride("2000-01-01", 25000);
   $lastYearRides[] = new Ride("2000-01-01", 27000);
   $lastYearRides[] = new Ride("2000-01-01", 28000);
-     */ 
+   
+   
+   $lifetimeRidesStatute[] = new Ride("2000-01-01", 4444) / $mileCoef;   
      
    //debug - all print
    usort($lifetimeRides, array("Ride", "CompareRides")); 
@@ -167,13 +176,17 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
     $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km\r\n";
     $emailbody = $emailbody . "konec last year jizd\r\n";
     
+  //  $pocetJizd = sizeof  ($lifetimeRidesStatute); 
+   // for ($ix = 0; $ix <$pocetJizd; $ix++)
+   // echo "life stat ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRidesStatute[$ix]->distanceKM . " miles<br>";
+    
    //echo "-----------------------<p>";
    //end of debug
      
    
    
    
-  
+ /* 
  $edn =  GetEddingtonNumber($lastYearRides);
  $planEN1 = $edn + 1;
  $planEN2 = $edn + 2;
@@ -221,7 +234,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  
  $emailbody = $emailbody . "lifetime metric = " .  $edn . "\r\n";
  $ednGrafStart =   $edn;
-  
+    */
  $edn =  GetEddingtonNumber($lifetimeRidesStatute);
  $planEN1 = $edn + 1;
  $planEN2 = $edn + 2; 
@@ -310,7 +323,7 @@ $headers = 'From: strava@rojicek.cz' . "\r\n" .
     'Reply-To: jiri@rojicek.cz' . "\r\n" .
     'X-Mailer: PHP/' . phpversion();
 
-mail("jiri@rojicek.cz", "Eddington number calc", $emailbody, $headers);
+//mail("jiri@rojicek.cz", "Eddington number calc", $emailbody, $headers);
  
  
  
