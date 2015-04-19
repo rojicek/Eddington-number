@@ -92,16 +92,16 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
        //last year
        if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
        {
-        $lastYearRides[] = new Ride("2000-01-01", $oneride["distance"]);
-        $lastYearRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
+        $lastYearRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000));
+        $lastYearRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] /1000 / $mileCoef));
               
       } 
       
       //all time
       if ((strtolower($oneride["type"]) == 'ride'))
        {                 
-        $lifetimeRides[] = new Ride("2000-01-01", $oneride["distance"]);
-        $lifetimeRidesStatute[] = new Ride("2000-01-01", $oneride["distance"] / $mileCoef);
+        $lifetimeRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000));
+        $lifetimeRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000 / $mileCoef));
       } 
       
   }
@@ -148,32 +148,35 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   $lastYearRides[] = new Ride("2000-01-01", 27000);
   $lastYearRides[] = new Ride("2000-01-01", 28000);
      */ 
+  
      
    //debug - all print
    usort($lifetimeRides, array("Ride", "CompareRides")); 
    $emailbody = $emailbody . "Vsechny jizdy\r\n";               
    $pocetJizd = sizeof  ($lifetimeRides); 
    for ($ix = 0; $ix <$pocetJizd; $ix++)
-    //echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km<br>";
-    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distanceKM . " km\r\n";
+   {
+   // echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km<br>";
+    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km\r\n";
+  }
     $emailbody = $emailbody . "konec vsech jizd\r\n\r\n";
-    
+  /*  
     
    usort($lastYearRides, array("Ride", "CompareRides")); 
    $emailbody = $emailbody . "Last year jizdy\r\n";               
    $pocetJizd = sizeof  ($lastYearRides); 
    for ($ix = 0; $ix <$pocetJizd; $ix++)
-  //  echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km<br>";
-    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distanceKM . " km\r\n";
+  //  echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distance . " km<br>";
+    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distance . " km\r\n";
     $emailbody = $emailbody . "konec last year jizd\r\n";
-    
+    */
    //echo "-----------------------<p>";
    //end of debug
      
    
    
    
-  
+  /*
  $edn =  GetEddingtonNumber($lastYearRides);
  $planEN1 = $edn + 1;
  $planEN2 = $edn + 2;
@@ -205,7 +208,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  
  
  $emailbody = $emailbody . "last year real = " .  $edn . "\r\n";
- 
+  */
  $edn =  GetEddingtonNumber($lifetimeRides);
  $planEN1 = $edn + 1;
  $planEN2 = $edn + 2;
@@ -214,14 +217,14 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  
  echo  "Your lifetime metric Eddington number is <b>". $edn . "</b>. <br>";
  echo "<font size=-1>";
- echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ; 
+ echo "<i>That means you've ridden " . $edn . "km or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ; 
  echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!<br>";
  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
  echo "</font><p>";
  
  $emailbody = $emailbody . "lifetime metric = " .  $edn . "\r\n";
  $ednGrafStart =   $edn;
-  
+ /* 
  $edn =  GetEddingtonNumber($lifetimeRidesStatute);
  $planEN1 = $edn + 1;
  $planEN2 = $edn + 2; 
@@ -236,17 +239,21 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  echo "</font><p>";
  
   $emailbody = $emailbody . "lifetime real = " .  $edn . "\r\n";
-  
+    */
   //graf
   
     //pridam graf pro lifetime EDN
   //$grafData = [];
   
+  
+   $emailbody = $emailbody . "\r\nplany:\r\n";
   for ($i = $ednGrafStart; $i <= $ednGrafStart+$planAhead; $i++)
   {
+    
      $gedn =  PlanEddingtonNumber  ($lifetimeRides, $i);
      $dist[$i-$ednGrafStart] = $i;
      $edgTogo[$i-$ednGrafStart] = $gedn;
+     $emailbody = $emailbody .   "For " . $dist[$i-$ednGrafStart] . " ride "  . $edgTogo[$i-$ednGrafStart] . "\r\n";
     // echo " for " . $dist[$i-$ednGrafStart] . " ride "  . $edgTogo[$i-$ednGrafStart] . "<br>";
     
   }
