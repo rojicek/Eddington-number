@@ -109,46 +109,106 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   $page=$page + 1;
 }
  
-    /*
- 
-   $lastYearRides = "";
+    
+  /*
+   $lifetimeRides = "";
+  
+  //VASEK 
+  $lifetimeRides[] = new Ride("2000-01-01", 22);
+  $lifetimeRides[] = new Ride("2000-01-01", 23);
+  $lifetimeRides[] = new Ride("2000-01-01", 25);  
+  $lifetimeRides[] = new Ride("2000-01-01", 25);
+  
+  $lifetimeRides[] = new Ride("2000-01-01", 26);
+  $lifetimeRides[] = new Ride("2000-01-01", 27);
+  $lifetimeRides[] = new Ride("2000-01-01", 27);
+  $lifetimeRides[] = new Ride("2000-01-01", 35);
+  $lifetimeRides[] = new Ride("2000-01-01", 36);
+  
+  $lifetimeRides[] = new Ride("2000-01-01", 38);
+  $lifetimeRides[] = new Ride("2000-01-01", 40);
+  
+    $lifetimeRides[] = new Ride("2000-01-01", 41);
+  $lifetimeRides[] = new Ride("2000-01-01", 41);
+  
+  $lifetimeRides[] = new Ride("2000-01-01", 44);
+    $lifetimeRides[] = new Ride("2000-01-01", 44);
+    $lifetimeRides[] = new Ride("2000-01-01", 50);
+    
+     $lifetimeRides[] = new Ride("2000-01-01", 54);
+    $lifetimeRides[] = new Ride("2000-01-01", 62);
+    $lifetimeRides[] = new Ride("2000-01-01", 69);
+    
+    
+     $lifetimeRides[] = new Ride("2000-01-01", 73);
+    $lifetimeRides[] = new Ride("2000-01-01", 74);
+    $lifetimeRides[] = new Ride("2000-01-01", 82);
+    $lifetimeRides[] = new Ride("2000-01-01", 84);
+    $lifetimeRides[] = new Ride("2000-01-01", 120);
    
-  $lastYearRides[] = new Ride("2000-01-01", 4444);
-  $lastYearRides[] = new Ride("2000-01-01", 5444);
-  $lastYearRides[] = new Ride("2000-01-01", 6000);  
-  $lastYearRides[] = new Ride("2000-01-01", 7000);
-  
-  $lastYearRides[] = new Ride("2000-01-01", 9000);
-  $lastYearRides[] = new Ride("2000-01-01", 9000);
-  $lastYearRides[] = new Ride("2000-01-01", 9000);
-  $lastYearRides[] = new Ride("2000-01-01", 9000);
-  $lastYearRides[] = new Ride("2000-01-01", 9000);
-  
-  $lastYearRides[] = new Ride("2000-01-01", 10000);
-  $lastYearRides[] = new Ride("2000-01-01", 10000);
-  
-    $lastYearRides[] = new Ride("2000-01-01", 13000);
-  $lastYearRides[] = new Ride("2000-01-01", 13000);
-  
-  $lastYearRides[] = new Ride("2000-01-01", 15000);
-    $lastYearRides[] = new Ride("2000-01-01", 15000);
-    $lastYearRides[] = new Ride("2000-01-01", 16000);
-    
-        $lastYearRides[] = new Ride("2000-01-01", 17000);
-  $lastYearRides[] = new Ride("2000-01-01", 17000);
-    
-  
-  $lastYearRides[] = new Ride("2000-01-01", 18800);
-  $lastYearRides[] = new Ride("2000-01-01", 22000);
-  $lastYearRides[] = new Ride("2000-01-01", 23000);
-  $lastYearRides[] = new Ride("2000-01-01", 23000);
-  $lastYearRides[] = new Ride("2000-01-01", 24000);
-  $lastYearRides[] = new Ride("2000-01-01", 24000);
-  $lastYearRides[] = new Ride("2000-01-01", 25000);
-  $lastYearRides[] = new Ride("2000-01-01", 27000);
-  $lastYearRides[] = new Ride("2000-01-01", 28000);
-     */ 
-  
+   //VASEK KONEC
+    */
+   
+   /*
+   //MARO 
+    $lifetimeRides[] = new Ride("2000-01-01", 4);
+    $lifetimeRides[] = new Ride("2000-01-01", 4);
+    $lifetimeRides[] = new Ride("2000-01-01", 5);
+    $lifetimeRides[] = new Ride("2000-01-01", 5);
+    $lifetimeRides[] = new Ride("2000-01-01", 5);
+    $lifetimeRides[] = new Ride("2000-01-01", 5);
+    $lifetimeRides[] = new Ride("2000-01-01", 6);
+    $lifetimeRides[] = new Ride("2000-01-01", 6);
+    $lifetimeRides[] = new Ride("2000-01-01", 6);
+    $lifetimeRides[] = new Ride("2000-01-01", 7);
+    $lifetimeRides[] = new Ride("2000-01-01", 7);
+    $lifetimeRides[] = new Ride("2000-01-01", 7);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 9);
+    $lifetimeRides[] = new Ride("2000-01-01", 10);
+    $lifetimeRides[] = new Ride("2000-01-01", 10);
+    $lifetimeRides[] = new Ride("2000-01-01", 12);
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 14);
+    $lifetimeRides[] = new Ride("2000-01-01", 23);    
+    $lifetimeRides[] = new Ride("2000-01-01", 24);
+    $lifetimeRides[] = new Ride("2000-01-01", 25);
+    $lifetimeRides[] = new Ride("2000-01-01", 25);
+    $lifetimeRides[] = new Ride("2000-01-01", 25);    
+    $lifetimeRides[] = new Ride("2000-01-01", 25);
+    $lifetimeRides[] = new Ride("2000-01-01", 26);    
+    $lifetimeRides[] = new Ride("2000-01-01", 26);
+    $lifetimeRides[] = new Ride("2000-01-01", 27);
+    $lifetimeRides[] = new Ride("2000-01-01", 27);    
+    $lifetimeRides[] = new Ride("2000-01-01", 27);
+    $lifetimeRides[] = new Ride("2000-01-01", 27);    
+    $lifetimeRides[] = new Ride("2000-01-01", 27);
+    $lifetimeRides[] = new Ride("2000-01-01", 28);
+    $lifetimeRides[] = new Ride("2000-01-01", 32);
+    $lifetimeRides[] = new Ride("2000-01-01", 33);
+    //$lifetimeRides[] = new Ride("2000-01-01", 23);
+    //$lifetimeRides[] = new Ride("2000-01-01", 24);
+   // $lifetimeRides[] = new Ride("2000-01-01", 24);
+   // $lifetimeRides[] = new Ride("2000-01-01", 25);
+  //  $lifetimeRides[] = new Ride("2000-01-01", 25);
+ //   $lifetimeRides[] = new Ride("2000-01-01", 25);
+  //  $lifetimeRides[] = new Ride("2000-01-01", 27);
+  //  $lifetimeRides[] = new Ride("2000-01-01", 28);
+
+
+     */
      
    //debug - all print
    usort($lifetimeRides, array("Ride", "CompareRides")); 

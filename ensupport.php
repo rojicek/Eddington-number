@@ -36,18 +36,18 @@ function GetEddingtonNumber($rides)
  //zadna jizda
      if ($pocetJizd == 0)
      { //zadna jizda
-     echo "zadna jizda<p>";
+   //  echo "zadna jizda<p>";
         return 0; 
      }
  //pokud je pocet jizd mensi nez minimalni, tak pocet jizd je edn
     if  ($pocetJizd <= $rides[0]->distance )
     {
-      echo "malo jizd: pocet=".$pocetJizd. "<= min jizda:" . $rides[0]->distance . "<p>";
+    //  echo "malo jizd: pocet=".$pocetJizd. "<= min jizda:" . $rides[0]->distance . "<p>";
       return   $pocetJizd;
     }
            
  //debug
- //for ($i = 0; $i < $pocetJizd; $i++) 
+// for ($i = 0; $i < $pocetJizd; $i++) 
  //echo "i=" . ($i+1) . " (". ($pocetJizd - $i) . ") " .  $rides[$i]->distance . " km<br>";
  //echo "<p>";
     
@@ -66,13 +66,24 @@ function GetEddingtonNumber($rides)
         }
         else
         {
+        //UZ VUBEC NEPOTREBUJI???
         //sikora bug: dalsi jizda uz nejde pouzit, ale predchozim kvalifikuji na vyssi edn
-        $delkaDalsi =  $rides[$i]->distance - 1;
-    //    echo "zkus "  . $edn  . " < ". $delkaDalsi . " km; pokud jo, tak i=".($pocetJizd - $i)."<br>";
+        
+        //???$delkaDalsi =  $rides[$i]->distance - 1;
+        $delkaDalsi =  $rides[$i+1]->distance;
+      //  echo "delka dalsi =" .  $delkaDalsi . "km <br>";
+  /*      echo "zkus "  . ($edn)  . " < ". ($delkaDalsi) . " km; pokud jo, tak i=".($pocetJizd - $i)."<br>";
        
         if ($edn < $delkaDalsi)
+               {
+                echo "jo<br>";
                $edn = $pocetJizd - $i;
-        
+               }
+               else
+               {
+                echo "ne<br>";
+               }
+   */     
          break;
         }
   }
