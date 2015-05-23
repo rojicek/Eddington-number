@@ -148,8 +148,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
    
    //VASEK KONEC
     */
-   
-   /*
+    /*
+       $lifetimeRides = "";
    //MARO 
     $lifetimeRides[] = new Ride("2000-01-01", 4);
     $lifetimeRides[] = new Ride("2000-01-01", 4);
@@ -209,6 +209,22 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
 
 
      */
+     /*
+     //ALES
+    $lifetimeRides = "";
+    $lifetimeRides[] = new Ride("2000-01-01", 6);
+    $lifetimeRides[] = new Ride("2000-01-01", 11);    
+    $lifetimeRides[] = new Ride("2000-01-01", 12);
+    $lifetimeRides[] = new Ride("2000-01-01", 12);    
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 13);
+    $lifetimeRides[] = new Ride("2000-01-01", 17);
+    $lifetimeRides[] = new Ride("2000-01-01", 18);
+    $lifetimeRides[] = new Ride("2000-01-01", 23);
+    $lifetimeRides[] = new Ride("2000-01-01", 46);
+       */
+    
      
    //debug - all print
    usort($lifetimeRides, array("Ride", "CompareRides")); 

@@ -26,7 +26,7 @@ function GetEddingtonNumber($rides)
    //minedn pro hledani dalsi jizdy - edn musi byt vetsi nez tohle cislo
 	 usort($rides, array("Ride", "CompareRides"));
    
-     
+    
      
    //abych poznal chybu
   $edn = 0;  
@@ -47,10 +47,11 @@ function GetEddingtonNumber($rides)
     }
            
  //debug
-// for ($i = 0; $i < $pocetJizd; $i++) 
- //echo "i=" . ($i+1) . " (". ($pocetJizd - $i) . ") " .  $rides[$i]->distance . " km<br>";
- //echo "<p>";
-    
+ /*
+ for ($i = 0; $i < $pocetJizd; $i++) 
+ echo "i=" . ($i+1) . " (". ($pocetJizd - $i) . ") " .  $rides[$i]->distance . " km<br>";
+ echo "<p>";
+   */ 
     // echo "posledni=" . $rides[$pocetJizd-1]->distance . "<p>";
 
          
@@ -62,28 +63,21 @@ function GetEddingtonNumber($rides)
     if ($stejnychAdelsich >= $rides[$i]->distance) 
          {                             
             $edn = $rides[$i]->distance; //aktualni EDN 
-   //         echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distance . " km -> EDN= ".$edn."<br>";            
+        //    echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distance . " km -> EDN= ".$edn."<br>";            
         }
         else
         {
-        //UZ VUBEC NEPOTREBUJI???
+        //POTREBUJI
         //sikora bug: dalsi jizda uz nejde pouzit, ale predchozim kvalifikuji na vyssi edn
         
-        //???$delkaDalsi =  $rides[$i]->distance - 1;
-        $delkaDalsi =  $rides[$i+1]->distance;
-      //  echo "delka dalsi =" .  $delkaDalsi . "km <br>";
-  /*      echo "zkus "  . ($edn)  . " < ". ($delkaDalsi) . " km; pokud jo, tak i=".($pocetJizd - $i)."<br>";
-       
-        if ($edn < $delkaDalsi)
-               {
-                echo "jo<br>";
-               $edn = $pocetJizd - $i;
-               }
-               else
-               {
-                echo "ne<br>";
-               }
-   */     
+        $pocetDalsich =  $pocetJizd - $i;
+        if ($edn < $pocetDalsich)
+        {
+                echo "beru pocet dalsich " .    $pocetDalsich . "<br>";
+                $edn =    $pocetDalsich;
+                
+          }
+            
          break;
         }
   }
