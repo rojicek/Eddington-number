@@ -5,12 +5,13 @@
 class Ride {
 	public $date;
 	public $distance;
-  
+  public $name;
 	
-	function Ride($date, $distance) 
+	function Ride($date, $distance, $name) 
 	{
 		$this->date = $date;
 		$this->distance = $distance;
+    $this->name = $name;
     
 	}   
 	static function CompareRides($r1, $r2)
@@ -73,7 +74,7 @@ function GetEddingtonNumber($rides)
         $pocetDalsich =  $pocetJizd - $i;
         if ($edn < $pocetDalsich)
         {
-                echo "beru pocet dalsich " .    $pocetDalsich . "<br>";
+               // echo "beru pocet dalsich " .    $pocetDalsich . "<br>";
                 $edn =    $pocetDalsich;
                 
           }

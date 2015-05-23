@@ -35,7 +35,8 @@ $token =  $_SESSION['stravatoken'];
 
 if (is_null($token)) 
 {
-       echo "<p>To learn your <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";          
+       echo "<p>To learn your <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";
+       echo "This link will ask you to grant permission to <b>read</b> some data about your rides from Strava through their interface.<br> This permission can be revoked at any time in Strava settings. I will never have access to your Strava credentials" ;         
 }   
  
  else
@@ -71,6 +72,8 @@ if (is_null($token))
  $result = file_get_contents($url);
  $rides = json_decode ($result, true);
  
+ //echo $url . "<p>";
+ 
 //$dnesek = strtotime(date("Y-m-d"));
 $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
  
@@ -88,7 +91,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   {
      
        $rideDate =  strtotime($oneride["start_date_local"]);
-       
+      
+      /* 
        //last year
        if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
        {
@@ -96,12 +100,17 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
         $lastYearRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] /1000 / $mileCoef));
               
       } 
-      
+        */
       //all time
       if ((strtolower($oneride["type"]) == 'ride'))
-       {                 
-        $lifetimeRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000));
-        $lifetimeRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000 / $mileCoef));
+       {  
+        
+        $cleanName = preg_replace("/[^a-zA-Z0-9ěščřžýáíéůúĚŠČŘŽÝÁÍÉŮÚè_.,;@#%~\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:\-\s\\\\]+/", " ", $oneride["name"]); 
+       // echo substr($oneride["name"],0,3) . "<br>";           
+       // echo $oneride["name"] . "<br>";
+       // echo $cleanName . "<br>";
+        $lifetimeRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000), $cleanName);
+        //$lifetimeRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000 / $mileCoef));
       } 
       
   }
@@ -334,7 +343,8 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
     
   }
     
- 
+
+   
  
  ?>     
      <script type="text/javascript">
@@ -343,7 +353,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
-        var data = google.visualization.arrayToDataTable([
+      
+       //steps
+        var dataSteps = google.visualization.arrayToDataTable([
           ['Distance',  'Rides to go' ],
           <?php
           
@@ -356,18 +368,54 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
           
         ]);
 
-        var options = {
+        var optionsSteps = {
           title: 'Your lifetime Eddington number plans',
           titlePosition: 'in',
           vAxis: {title: 'Rides to go'},
           hAxis: {title: 'kilometers'},
           isStacked: true,
-          legend: { position: "none" },        
+          legend: { position: "none" }, 
+           animation: {
+            duration: 1000,
+            startup: true, 
+            easing: "out", 
+            },       
         };
 
-        var chart = new google.visualization.SteppedAreaChart(document.getElementById('chart_div'));
+        var chartSteps = new google.visualization.SteppedAreaChart(document.getElementById('chart_div_steps'));
+        chartSteps.draw(dataSteps, optionsSteps);
+      
+       //histogram
+       
+          var dataHist = google.visualization.arrayToDataTable([
+          ['Ride name', 'Length'],
+            <?php
+              
+               for ($ix = 0; $ix < sizeof ($lifetimeRides); $ix++)
+               {
+              // echo "['" . Ride_. $ix . "', " .   12 . "],"; 
+                echo "['" . $lifetimeRides[$ix]->name . "', " .   $lifetimeRides[$ix]->distance . "],"; 
+               }   
+               ?>
+              ]);
+               
+          var optionsHist = {
+          title: 'Distribution of your rides',
+          legend: { position: 'none' },
+           histogram: { bucketSize: 10 } ,
+          hAxis: {title: 'Rides lenght [km]'},
+          vAxis: {title: 'Rides ridden'},
+           animation: {
+            duration: 1000,
+            startup: true , 
+             easing: "out",
+            },
+        };
 
-        chart.draw(data, options);
+        var chartHist = new google.visualization.Histogram(document.getElementById('chart_div_hist'));
+        chartHist.draw(dataHist, optionsHist);
+                                                                            
+      
       
       }
       
@@ -377,7 +425,10 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
   <?php
  
  //echo "<center> <b>Your lifetime Eddington number plans</b> </center>"; 
- echo  "<div id=\"chart_div\" style=\"width: 800px; height: 600px;\"></div>";
+ echo  "<div id=\"chart_div_steps\" style=\"width: 800px; height: 600px;\"></div>";
+ echo  "<div id=\"chart_div_hist\" style=\"width: 800px; height: 600px;\"></div>";
+
+
  //echo "<script>  javascript:drawChart(20); </script>";
  
  echo "<font size=-1>";
