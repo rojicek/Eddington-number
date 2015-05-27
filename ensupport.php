@@ -7,11 +7,12 @@ class Ride {
 	public $distance;
   public $name;
 	
-	function Ride($date, $distance, $name) 
+	function Ride($date, $distance, $name, $revolutions) 
 	{
 		$this->date = $date;
 		$this->distance = $distance;
     $this->name = $name;
+    $this->revolutions = $revolutions;
     
 	}   
 	static function CompareRides($r1, $r2)

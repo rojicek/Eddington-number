@@ -4,6 +4,22 @@
 
 
 <head> 
+
+ <style>
+    .chartWithOverlay {
+           position: relative;
+           width: 800px;
+    }
+    .overlay {
+           width: 800px;
+           height: 60px;
+           position: absolute;    
+           left: 0px;
+           top: 260px;
+    
+    }
+ </style>
+
 <title>Eddington number</title>
 <meta charset="UTF-8">
 
@@ -11,11 +27,7 @@
 
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    
-  
- 
-
-
+         
     </head>
 
 <body>
@@ -52,8 +64,15 @@ if (is_null($token))
  $atljmeno =  $athlete["firstname"];// . " " . $athlete["lastname"];
  $atlpic =  $athlete["profile_medium"];
  
+if    ($atlpic != "avatar/athlete/medium.png")
+{
+ echo "<img src = \"" .  $atlpic . "\" align = \"middle\">&nbsp;&nbsp;&nbsp;&nbsp;"; 
+ }
+ else
+ {
+   echo "&nbsp;&nbsp;&nbsp;&nbsp;"; 
+ }
  
- echo "<img src = \"" .  $atlpic . "\" align = \"middle\">&nbsp;&nbsp;&nbsp;&nbsp;";
  echo  "Hi " .   $atljmeno . " - here's your stats:<p>";
  
  $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
@@ -106,10 +125,9 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
        {  
         
         $cleanName = preg_replace("/[^a-zA-Z0-9ěščřžýáíéůúĚŠČŘŽÝÁÍÉŮÚè_.,;@#%~\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:\-\s\\\\]+/", " ", $oneride["name"]); 
-       // echo substr($oneride["name"],0,3) . "<br>";           
-       // echo $oneride["name"] . "<br>";
-       // echo $cleanName . "<br>";
-        $lifetimeRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000), $cleanName);
+        $revolutions = floor($oneride["average_cadence"] * $oneride["moving_time"] / 60.0);
+                    
+        $lifetimeRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000), $cleanName, $revolutions);
         //$lifetimeRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000 / $mileCoef));
       } 
       
@@ -218,22 +236,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
 
 
      */
-     /*
-     //ALES
-    $lifetimeRides = "";
-    $lifetimeRides[] = new Ride("2000-01-01", 6);
-    $lifetimeRides[] = new Ride("2000-01-01", 11);    
-    $lifetimeRides[] = new Ride("2000-01-01", 12);
-    $lifetimeRides[] = new Ride("2000-01-01", 12);    
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 17);
-    $lifetimeRides[] = new Ride("2000-01-01", 18);
-    $lifetimeRides[] = new Ride("2000-01-01", 23);
-    $lifetimeRides[] = new Ride("2000-01-01", 46);
-       */
-    
+       
      
    //debug - all print
    usort($lifetimeRides, array("Ride", "CompareRides")); 
@@ -242,7 +245,7 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
    for ($ix = 0; $ix <$pocetJizd; $ix++)
    {
    // echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km<br>";
-    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km\r\n";
+     $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km : ".$lifetimeRides[$ix]->revolutions . " rev.\r\n";
   }
     $emailbody = $emailbody . "konec vsech jizd\r\n\r\n";
   /*  
@@ -415,19 +418,75 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
         var chartHist = new google.visualization.Histogram(document.getElementById('chart_div_hist'));
         chartHist.draw(dataHist, optionsHist);
                                                                             
-      
+    //donut/cadence
+     var dataCadence = google.visualization.arrayToDataTable([
+          ['Task', 'Hours per Day'],
+           <?php
+                $kmOnly = 0;
+                $totalRev = 0;
+               for ($ix = 0; $ix < sizeof ($lifetimeRides); $ix++)
+               {  
+                 if  ($lifetimeRides[$ix]->revolutions > 0)
+                 {          
+                echo "['" . $lifetimeRides[$ix]->name . "', " .   $lifetimeRides[$ix]->revolutions . "],";
+                $totalRev =  $totalRev + $lifetimeRides[$ix]->revolutions;
+                }
+                else
+                { //nemam otacky, jen pridam km
+                $kmOnly = $kmOnly + $lifetimeRides[$ix]->distance;
+                } 
+               } 
+               
+               if  ($totalRev ==0)
+               { //aby se nakreslil graf
+                  echo "['no data',1]";
+              }
+                 
+               ?>       
+        ]);
+
+        var optionsCadence = {         
+          pieHole: 0.6,
+          legend: 'none',
+          title: 'Your crank revolutions',
+        };
+
+        var chartCadence = new google.visualization.PieChart(document.getElementById('chart_div_cadence'));
+        chartCadence.draw(dataCadence, optionsCadence);  
       
       }
       
       
     </script>                
 
+
+  
+ 
+ 
+ <div id="chart_div_steps" style="width: 800px; height: 600px;"></div>
+ <div id="chart_div_hist" style="width: 800px; height: 600px;"></div>
+ 
+ <div class="chartWithOverlay">
+    <div id="chart_div_cadence" style="width: 800px; height: 600px;"></div>
+   <div class="overlay">
+      <div style="font-family:'Verdana'; font-style: bold;  font-size: 32px;">
+        <center><?php echo $totalRev; ?></center>        
+      </div>
+      <div style="font-family:'Verdana'; font-size: 12px;">
+      <center>crank revolutions</center>        
+      <center><font style="font-size:10px;font-style: italic;">+ <?php echo $kmOnly;?>km<br>without cadence sensor</font></center>
+      </div>
+    </div>  
+    </div>
+ 
   <?php
  
  //echo "<center> <b>Your lifetime Eddington number plans</b> </center>"; 
- echo  "<div id=\"chart_div_steps\" style=\"width: 800px; height: 600px;\"></div>";
- echo  "<div id=\"chart_div_hist\" style=\"width: 800px; height: 600px;\"></div>";
+ //echo  "<div id=\"chart_div_steps\" style=\"width: 800px; height: 600px;\"></div>";
+ //echo  "<div id=\"chart_div_hist\" style=\"width: 800px; height: 600px;\"></div>";
 
+
+    
 
  //echo "<script>  javascript:drawChart(20); </script>";
  
