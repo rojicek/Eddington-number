@@ -20,17 +20,15 @@
     }
  </style>
 
-<title>Eddington number</title>
+<title>Strava stats</title>
 <meta charset="UTF-8">
 
 <link rel="stylesheet" type="text/css" href="ed.css">
-
-
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-         
-    </head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>         
+</head>
 
 <body>
+
 <?php
 
 //echo "JE TO ROZBITE!!<p>";
@@ -42,31 +40,57 @@ include 'ensupport.php';
 session_start();
 $mileCoef = 1.609344;
 $planAhead = 15;
-$token =  $_SESSION['stravatoken'];
-//echo "token: " .    $token . "<br>";
+$authToken =  $_SESSION['stravatoken'];
 
-if (is_null($token)) 
+
+
+//try to reload array from session unless reload forced
+
+if (($_GET["force"]=="yes")  || 1)
+  {
+    //echo "force reload<br>";
+    for ($ixA = 0; $ixA < $_SESSION['numberOfActivities']; $ixA++)
+        {unset($_SESSION['activity'. $ixA]);}
+    
+    unset($_SESSION['numberOfActivities']);
+  }
+
+if (isset($_SESSION['numberOfActivities']))
 {
-       echo "<p>To learn your <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";
+ //echo "ctu ze session<br>";
+ for ($ixA = 0; $ixA < $_SESSION['numberOfActivities']; $ixA++)
+     {$allActivities[$ixA]  =    $_SESSION['activity'. $ixA];}
+ } //isset
+
+ 
+//echo "prvni: " .  $prvniActivities[0]->name . "<br>";
+//echo "pocet aktivit na zacatku - size: " . sizeof  ($allActivities) . "<br>";
+//echo "pocet aktivit na zacatku -count: " . count  ($allActivities) . "<br>";
+//echo "prvni act na zacatku: >". $allActivities[0]->name . "<<br>";
+
+if (is_null($authToken)) 
+{
+       echo "<p>To learn your cycling stats including <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";
        echo "This link will ask you to grant permission to <b>read</b> some data about your rides from Strava through their interface.<br> This permission can be revoked at any time in Strava settings. I will never have access to your Strava credentials" ;         
 }   
- 
+
  else
  {//login
 //jsem prihlaseny, muzu nacist aktivity 
  
 
- $url = "https://www.strava.com/api/v3/athlete?access_token=" . $token;
+ $url = "https://www.strava.com/api/v3/athlete?access_token=" . $authToken;
  $result = file_get_contents($url);
  $athlete = json_decode ($result, true);
   
  //get athlete info 
  $atljmeno =  $athlete["firstname"];// . " " . $athlete["lastname"];
  $atlpic =  $athlete["profile_medium"];
- 
+
+  
 if    ($atlpic != "avatar/athlete/medium.png")
-{
- echo "<img src = \"" .  $atlpic . "\" align = \"middle\">&nbsp;&nbsp;&nbsp;&nbsp;"; 
+ {
+   echo "<img src = \"" .  $atlpic . "\" align = \"middle\">&nbsp;&nbsp;&nbsp;&nbsp;"; 
  }
  else
  {
@@ -75,281 +99,448 @@ if    ($atlpic != "avatar/athlete/medium.png")
  
  echo  "Hi " .   $atljmeno . " - here's your stats:<p>";
  
- $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
- $emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()). "\r\n";;  
+ //email jen dole
+ //$emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
+ //$emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()). "\r\n";;  
    
-  
- 
- //get rides
- 
+
+
+ //get activities
+   
  $page = 1;
  
-
- while (true)
+ 
+ //todo: asi bych nemel nacitat aktivity, kdyz uz je mam v poli 
+  
+ if (!isset($_SESSION['numberOfActivities']))
+ { //nenacetl jsem ze session  
+ while (true) 
  {
- $url = "https://www.strava.com/api/v3/activities?per_page=200&page=".$page."&access_token=" . $token;
- $result = file_get_contents($url);
- $rides = json_decode ($result, true);
+  
+   
+  $url = "https://www.strava.com/api/v3/activities?per_page=200&page=".$page."&access_token=" . $authToken;
+  $result = file_get_contents($url);
+  $activities = json_decode ($result, true);
  
- //echo $url . "<p>";
+  //echo $url . "<p>";
  
-//$dnesek = strtotime(date("Y-m-d"));
-$predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
- 
- if (empty($rides))
+ if (empty($activities))
  {
-  break; //zadne dalsi jizdy
+   break; //zadne dalsi jizdy
  }
- 
+  
 
- //create array fof lifes (all live / last year)
- //metric and statute -> 4 arrays
- //can be more pages (max 200 rides per page by Strava)
-
- foreach ($rides as $oneride)
+ //can be more pages (max 200 rides per page by Strava)                
+ foreach ($activities as $oneactivity)
   {
-     
-       $rideDate =  strtotime($oneride["start_date_local"]);
-      
-      /* 
-       //last year
-       if (($rideDate >= $predrokem )   && (strtolower($oneride["type"]) == 'ride'))
-       {
-        $lastYearRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000));
-        $lastYearRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] /1000 / $mileCoef));
+        //echo ".";    
+        $cleanName = preg_replace("/[^a-zA-Z0-9ěščřžýáíéůúĚŠČŘŽÝÁÍÉŮÚè_.,;@#%~\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:\-\s\\\\]+/", " ", $oneactivity["name"]); 
+        $revolutions = floor($oneactivity["average_cadence"] * $oneactivity["moving_time"] / 60.0);
+        //$datum = new DateTime($oneactivity["start_date_local"], new DateTimeZone($oneactivity["timezone"]));
+                
+        $timezone = trim(strstr($oneactivity["timezone"], " "));                                       
+        $datum = new DateTime($oneactivity["start_date_local"], new DateTimeZone($timezone));
+                
               
-      } 
-        */
-      //all time
-      if ((strtolower($oneride["type"]) == 'ride'))
-       {  
+      //ok  echo "date: " . $oneactivity["start_date_local"] . ' @ ' .  $oneactivity["timezone"] . " = ";
+      //ok echo $datum->format('Y-m-d H:i:s') .  "--" . $datum->format('Y') ."<br>";        
+                                                                                
+             
+        $allActivities[] = new Activity($datum, $timezone, $oneactivity["type"], $oneactivity["distance"], $cleanName, $oneactivity["moving_time"], $oneactivity["total_elevation_gain"], $revolutions);
+
         
-        $cleanName = preg_replace("/[^a-zA-Z0-9ěščřžýáíéůúĚŠČŘŽÝÁÍÉŮÚè_.,;@#%~\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:\-\s\\\\]+/", " ", $oneride["name"]); 
-        $revolutions = floor($oneride["average_cadence"] * $oneride["moving_time"] / 60.0);
-                    
-        $lifetimeRides[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000), $cleanName, $revolutions);
-        //$lifetimeRidesStatute[] = new Ride("2000-01-01", floor($oneride["distance"] / 1000 / $mileCoef));
-      } 
-      
   }
   
   $page=$page + 1;
 }
+} //nenacetl jsem ze session 
  
-    
-  /*
-   $lifetimeRides = "";
-  
-  //VASEK 
-  $lifetimeRides[] = new Ride("2000-01-01", 22);
-  $lifetimeRides[] = new Ride("2000-01-01", 23);
-  $lifetimeRides[] = new Ride("2000-01-01", 25);  
-  $lifetimeRides[] = new Ride("2000-01-01", 25);
-  
-  $lifetimeRides[] = new Ride("2000-01-01", 26);
-  $lifetimeRides[] = new Ride("2000-01-01", 27);
-  $lifetimeRides[] = new Ride("2000-01-01", 27);
-  $lifetimeRides[] = new Ride("2000-01-01", 35);
-  $lifetimeRides[] = new Ride("2000-01-01", 36);
-  
-  $lifetimeRides[] = new Ride("2000-01-01", 38);
-  $lifetimeRides[] = new Ride("2000-01-01", 40);
-  
-    $lifetimeRides[] = new Ride("2000-01-01", 41);
-  $lifetimeRides[] = new Ride("2000-01-01", 41);
-  
-  $lifetimeRides[] = new Ride("2000-01-01", 44);
-    $lifetimeRides[] = new Ride("2000-01-01", 44);
-    $lifetimeRides[] = new Ride("2000-01-01", 50);
-    
-     $lifetimeRides[] = new Ride("2000-01-01", 54);
-    $lifetimeRides[] = new Ride("2000-01-01", 62);
-    $lifetimeRides[] = new Ride("2000-01-01", 69);
-    
-    
-     $lifetimeRides[] = new Ride("2000-01-01", 73);
-    $lifetimeRides[] = new Ride("2000-01-01", 74);
-    $lifetimeRides[] = new Ride("2000-01-01", 82);
-    $lifetimeRides[] = new Ride("2000-01-01", 84);
-    $lifetimeRides[] = new Ride("2000-01-01", 120);
+ // echo "pocet aktivit dole " . sizeof  ($allActivities) . "<br>";
    
-   //VASEK KONEC
-    */
-    /*
-       $lifetimeRides = "";
-   //MARO 
-    $lifetimeRides[] = new Ride("2000-01-01", 4);
-    $lifetimeRides[] = new Ride("2000-01-01", 4);
-    $lifetimeRides[] = new Ride("2000-01-01", 5);
-    $lifetimeRides[] = new Ride("2000-01-01", 5);
-    $lifetimeRides[] = new Ride("2000-01-01", 5);
-    $lifetimeRides[] = new Ride("2000-01-01", 5);
-    $lifetimeRides[] = new Ride("2000-01-01", 6);
-    $lifetimeRides[] = new Ride("2000-01-01", 6);
-    $lifetimeRides[] = new Ride("2000-01-01", 6);
-    $lifetimeRides[] = new Ride("2000-01-01", 7);
-    $lifetimeRides[] = new Ride("2000-01-01", 7);
-    $lifetimeRides[] = new Ride("2000-01-01", 7);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 9);
-    $lifetimeRides[] = new Ride("2000-01-01", 10);
-    $lifetimeRides[] = new Ride("2000-01-01", 10);
-    $lifetimeRides[] = new Ride("2000-01-01", 12);
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 13);
-    $lifetimeRides[] = new Ride("2000-01-01", 14);
-    $lifetimeRides[] = new Ride("2000-01-01", 23);    
-    $lifetimeRides[] = new Ride("2000-01-01", 24);
-    $lifetimeRides[] = new Ride("2000-01-01", 25);
-    $lifetimeRides[] = new Ride("2000-01-01", 25);
-    $lifetimeRides[] = new Ride("2000-01-01", 25);    
-    $lifetimeRides[] = new Ride("2000-01-01", 25);
-    $lifetimeRides[] = new Ride("2000-01-01", 26);    
-    $lifetimeRides[] = new Ride("2000-01-01", 26);
-    $lifetimeRides[] = new Ride("2000-01-01", 27);
-    $lifetimeRides[] = new Ride("2000-01-01", 27);    
-    $lifetimeRides[] = new Ride("2000-01-01", 27);
-    $lifetimeRides[] = new Ride("2000-01-01", 27);    
-    $lifetimeRides[] = new Ride("2000-01-01", 27);
-    $lifetimeRides[] = new Ride("2000-01-01", 28);
-    $lifetimeRides[] = new Ride("2000-01-01", 32);
-    $lifetimeRides[] = new Ride("2000-01-01", 33);
-    //$lifetimeRides[] = new Ride("2000-01-01", 23);
-    //$lifetimeRides[] = new Ride("2000-01-01", 24);
-   // $lifetimeRides[] = new Ride("2000-01-01", 24);
-   // $lifetimeRides[] = new Ride("2000-01-01", 25);
-  //  $lifetimeRides[] = new Ride("2000-01-01", 25);
- //   $lifetimeRides[] = new Ride("2000-01-01", 25);
-  //  $lifetimeRides[] = new Ride("2000-01-01", 27);
-  //  $lifetimeRides[] = new Ride("2000-01-01", 28);
-
-
-     */
-       
-     
-   //debug - all print
-   usort($lifetimeRides, array("Ride", "CompareRides")); 
-   $emailbody = $emailbody . "Vsechny jizdy\r\n";               
-   $pocetJizd = sizeof  ($lifetimeRides); 
-   for ($ix = 0; $ix <$pocetJizd; $ix++)
-   {
-   // echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km<br>";
-     $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lifetimeRides[$ix]->distance . " km : ".$lifetimeRides[$ix]->revolutions . " rev.\r\n";
-  }
-    $emailbody = $emailbody . "konec vsech jizd\r\n\r\n";
-  /*  
-    
-   usort($lastYearRides, array("Ride", "CompareRides")); 
-   $emailbody = $emailbody . "Last year jizdy\r\n";               
-   $pocetJizd = sizeof  ($lastYearRides); 
-   for ($ix = 0; $ix <$pocetJizd; $ix++)
-  //  echo "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distance . " km<br>";
-    $emailbody = $emailbody . "ride=" . ($ix+1) . " (". ($pocetJizd - $ix) . ") " .  $lastYearRides[$ix]->distance . " km\r\n";
-    $emailbody = $emailbody . "konec last year jizd\r\n";
-    */
-   //echo "-----------------------<p>";
-   //end of debug
-     
-   
-   
-   
-  /*
- $edn =  GetEddingtonNumber($lastYearRides);
- $planEN1 = $edn + 1;
- $planEN2 = $edn + 2;
- $missingRides1 = PlanEddingtonNumber  ($lastYearRides, $planEN1);
- $missingRides2 = PlanEddingtonNumber  ($lastYearRides, $planEN2);
- 
- echo  "Your last year metric Eddington number is <b>". $edn . "</b>. <br>";
- echo "<font size=-1>";
- echo "<i>That means you rode " . $edn . "km or more at least " . $edn . " times in last year as of today.</i><br>"  ;
- echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!<br>";
-  echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
- echo "</font><p>";
- 
- 
-  $emailbody = $emailbody . "last year metric = " .  $edn . "\r\n";
- 
- $edn =  GetEddingtonNumber($lastYearRidesStatute);
- $planEN1 = $edn + 1;
- $planEN2 = $edn + 2;
- $missingRides1 = PlanEddingtonNumber  ($lastYearRidesStatute, $planEN1);
- $missingRides2 = PlanEddingtonNumber  ($lastYearRidesStatute, $planEN2);
- 
- echo  "Your last year real Eddington number is <b>". $edn . "</b>. <br>";
- echo "<font size=-1>";
- echo "<i>That means you rode " . $edn . " miles or more at least " . $edn . " times in last year as of today.</i><br>"  ; 
- echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!<br>";
- echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
- echo "</font><p>";
- 
- 
- $emailbody = $emailbody . "last year real = " .  $edn . "\r\n";
-  */
- $edn =  GetEddingtonNumber($lifetimeRides);
- $planEN1 = $edn + 1;
- $planEN2 = $edn + 2;
- $missingRides1 = PlanEddingtonNumber  ($lifetimeRides, $planEN1);
- $missingRides2 = PlanEddingtonNumber  ($lifetimeRides, $planEN2);
- 
- echo  "Your lifetime metric Eddington number is <b>". $edn . "</b>. <br>";
- echo "<font size=-1>";
- echo "<i>That means you've ridden " . $edn . "km or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ; 
- echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . "km or more to reach " . $planEN1 . "!<br>";
- echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . "km or more to reach " . $planEN2 . "!<br>";
- echo "</font><p>";
- 
- $emailbody = $emailbody . "lifetime metric = " .  $edn . "\r\n";
- $ednGrafStart =   $edn;
- /* 
- $edn =  GetEddingtonNumber($lifetimeRidesStatute);
- $planEN1 = $edn + 1;
- $planEN2 = $edn + 2; 
- $missingRides1 = PlanEddingtonNumber  ($lifetimeRidesStatute, $planEN1);
- $missingRides2 = PlanEddingtonNumber  ($lifetimeRidesStatute, $planEN2);
- 
- echo  "Your lifetime realEddington number is <b>". $edn . "</b>. <br>";
- echo "<font size=-1>";
- echo "<i>That means you rode " . $edn . " miles or more at least " . $edn . " times since you started recording on Strava.</i><br>"  ;
- echo "Ride " . $missingRides1 . " ride(s) of " . $planEN1 . " miles or more to reach " . $planEN1 . "!<br>";
- echo "Ride " . $missingRides2 . " ride(s) of " . $planEN2 . " miles or more to reach " . $planEN2 . "!<br>";
- echo "</font><p>";
- 
-  $emailbody = $emailbody . "lifetime real = " .  $edn . "\r\n";
-    */
-  //graf
+ // echo  $allActivities[0]->date->format('Y-m-d H:i:s') ."<br>"; 
+ // echo  $allActivities[0]->timezone . "<br>";
+ // echo  $allActivities[0]->type . "<br>";  
   
-    //pridam graf pro lifetime EDN
-  //$grafData = [];
+ 
+ 
+ //store activities into session variable
+ $_SESSION['numberOfActivities'] =  sizeof  ($allActivities); 
+ for ($ixA = 0; $ixA < sizeof  ($allActivities); $ixA++) 
+ { //all activities
+      $_SESSION['activity' . $ixA ] =  $allActivities[$ixA];
+      $ixA = $ixA + 1;
+ }//all activities
+ 
+ 
+ //priprav menu (combo)
+ //$comboYears = array("all", "year", "custom");
+ //$comboYearsLabels = array("All time", "Last year", "Custom");
+ 
+ 
+ 
+ $comboYears[0][0] = "all";
+ $comboYears[0][1] = "All time";
+ $comboYears[1][0] = "year";
+ $comboYears[1][1] = "Last 365 days";
+ $comboYearsItemsNbr = 2;
+ $comboActivities = array("Ride", "Run"); //na zbytek kaslu
+ $comboUnits = array("Metric", "Imperial"); //na zbytek kaslu
+ 
+ 
   
-  
-   $emailbody = $emailbody . "\r\nplany:\r\n";
-  for ($i = $ednGrafStart; $i <= $ednGrafStart+$planAhead; $i++)
+      foreach ($allActivities as $oneActivity)
+      {
+        
+        $yr4menu = $oneActivity->date->format('Y') ;
+        $alreadyInCombo = 0;
+        
+        foreach($comboYears as $tmp)
+        {
+          if(in_array($yr4menu, $tmp))
+          {
+              $alreadyInCombo = 1;
+          }
+        }
+ 
+        
+        //if (!in_array($yr4menu,$comboYears))  //if not yet in array
+        if (!$alreadyInCombo)
+         {
+           $comboYears[$comboYearsItemsNbr][0]  =  $yr4menu;
+           $comboYears[$comboYearsItemsNbr][1]  =  $yr4menu;
+           $comboYearsItemsNbr = $comboYearsItemsNbr + 1;
+           
+           //array_push ($comboYears, $yr4menu) ;
+           //array_push ($comboYearsLabels, $yr4menu) ;
+        }
+            
+      }
+ 
+ /* neni podporovano
+ $comboYears[$comboYearsItemsNbr][0] = "custom";
+ $comboYears[$comboYearsItemsNbr][1] = "Custom";
+ $comboYearsItemsNbr = $comboYearsItemsNbr + 1;
+ */
+ 
+  for ($i=0;$i<$comboYearsItemsNbr; $i++)
   {
-    
-     $gedn =  PlanEddingtonNumber  ($lifetimeRides, $i);
-     $dist[$i-$ednGrafStart] = $i;
-     $edgTogo[$i-$ednGrafStart] = $gedn;
-     $emailbody = $emailbody .   "For " . $dist[$i-$ednGrafStart] . " ride "  . $edgTogo[$i-$ednGrafStart] . "\r\n";
-    // echo " for " . $dist[$i-$ednGrafStart] . " ride "  . $edgTogo[$i-$ednGrafStart] . "<br>";
-    
+   // echo  $comboYears[$i][0] . " - " . $comboYears[$i][1] . "<br>";
   }
+   
+//defaultni hodnoty
+
+ if ($_GET["time"]== "")
+      $selectedTime = "all";
+    else
+      $selectedTime = $_GET["time"];
+
+    if ($_GET["type"]== "")
+      $selectedType = "ride";
+    else
+      $selectedType = $_GET["type"];
+
+    if ($_GET["unit"]== "")
+      $selectedUnit = "metric";
+    else
+      $selectedUnit = $_GET["unit"];
+      
+   //echo "selected"
+
+
+ //for ($i=0;$i<$comboYearsItemsNbr; $i++)
+ //echo "podminka:" . strtolower($selectedTime) . " == " .  strtolower($comboYears[$i][0]) . "<br>";
+
+    
+ ?>
+
+Choose time, activity and your preferred units: 
+<form name="selects" id="formSelects" action="" method="GET">
+
+
+<select name="time" id="time">
+<?php 
+//foreach ($comboYears as $oneYear)
+ for ($i=0;$i<$comboYearsItemsNbr; $i++)
+ { 
+  
+  echo "<option value=\"". strtolower ($comboYears[$i][0]) . "\"";
+  if (strtolower($selectedTime)==strtolower($comboYears[$i][0])){echo "selected=\"selected\"";}
+  echo "> ".$comboYears[$i][1] ."</option>";
+  }
+
+?>
+
+</select>
+
+<select name="type" id="type">
+<?php 
+foreach ($comboActivities as $oneAct)
+ { 
+  echo "<option value=\"". strtolower ($oneAct) . "\"";
+  if (strtolower($selectedType)==strtolower($oneAct)){echo "selected=\"selected\"";}
+  echo "> ".$oneAct."</option>";
+  }
+
+?>
+</select>
+ 
+<select name="unit" id="unit">
+<?php 
+foreach ($comboUnits as $oneUnit)
+ { 
+  echo "<option value=\"". strtolower ($oneUnit) . "\"";
+  if (strtolower($selectedUnit)==strtolower($oneUnit)){echo "selected=\"selected\"";}
+  echo "> ".$oneUnit."</option>";
+  }
+
+?>
+</select>
+ 
+
+<input type="checkbox" name="force" value="yes"> Force data reload from Strava<br>
+<input type="submit"  value="Refresh stats">
+</form>
+
+    <?php
+            
+  
+    //loop over all activities and find those match
+    unset($selectedActivities);
+    $calcNumberOfActivities = 0;
+    $calcTotalElevation = 0;
+    $calcTotalDistance = 0;
+    $calcMovingTime = 0;
+    $calcRevolution = 0;
+    $calcDistForNoCadence = 0;
+    
+    //jen pro prevod na stopy pro elevation gain pri imperial units
+     $elevKoef = 1;
+     if  (strtolower($selectedUnit) == "imperial")
+              $elevKoef = 5.28;
+    
+   // echo "pocet vsech aktivit:" . sizeof  ($allActivities) . "<br>";
+    foreach ($allActivities as $act)
+     {       
+       $timeMatch = 0; //make it separate
+       if  (strtolower($selectedTime) == "all")
+          {$timeMatch = 1;}
+      
+      $activityYear = $act->date->format('Y');
+      if  (strtolower($selectedTime) == strtolower($activityYear))
+          {$timeMatch = 1;}
+       
+       $yearAgo =  strtotime('-1 year');
+       if ((strtolower($selectedTime) == "year") &&  ($act->date->format("U") >= $yearAgo))
+            {$timeMatch = 1;}
+                     
+      // echo   "act time = "  . $act->date->format("Y-m-d H:i:s") . " ---- year ago=" . date("Y-m-d H:i:s", $yearAgo) . " MATCH = " . $timeMatch . "<br>"; 
+                           
+     
+       //add as many filters as appropriate
+    
+       if  ((strtolower($act->type) == strtolower($selectedType)) && ($timeMatch == 1))      
+       {        
+                
+        if  (strtolower($selectedUnit) == "imperial")
+               {
+                $dist = $act->distance / 1000 / $mileCoef;    //in miles
+                $elev = $act->elevation_gain / $mileCoef;     //in ( miles) 
+               
+               }
+            else
+               {
+                 $dist = $act->distance / 1000; //in km
+                 $elev = $act->elevation_gain; //in meters                 
+               }
+        //echo "act " . $act->name ."; "  . $act->date->format("Y-m-d H:i:s") . "; dist:" . $dist . " elev: " . $elev . "<br>";
+        
+        $selectedActivities[] = new Activity($act->datum,  $act->timezone, $act->type, floor($dist), $act->name, $act->moving_time, $elev, $act->revolutions);
+        $calcNumberOfActivities = $calcNumberOfActivities + 1;        
+        $calcTotalElevation = $calcTotalElevation +  $elev;
+        $calcTotalDistance = $calcTotalDistance +  $dist;
+        $calcMovingTime = $calcMovingTime +  $act->moving_time;
+        if   ($act->revolutions > 0)
+          {$calcRevolution = $calcRevolution +   $act->revolutions;}
+          else
+          {$calcDistForNoCadence = $calcDistForNoCadence + $dist; }
+        
+       }
+     }//foreach 
+    
+     //spravne labely
+     $distUOM = "km";
+     $elevUOM = "m";
+     if  (strtolower($selectedUnit) == "imperial")
+       {
+        $distUOM = "miles";
+        $elevUOM = "ft";
+       }
+      
+      $actLabel = "Run";
+      $bucketSize = 3; //pro beh
+      if  (strtolower($selectedType) == "ride")
+       {
+        $actLabel = "Ride";  
+        $bucketSize = 10; //pro kolo      
+       } 
+       
+      
+     
+    
+    //pokusy
+     
+     $edn =  GetEddingtonNumber($selectedActivities);
+     $planEN1 = $edn + 1;
+     $planEN2 = $edn + 2;     
+     $missingRides1 = PlanEddingtonNumber  ($selectedActivities, $planEN1);
+     $missingRides2 = PlanEddingtonNumber  ($selectedActivities, $planEN2);
+
+
+     $calcMovingTimeDays =  floor($calcMovingTime / 86400);
+     $calcMovingTimeHours =   floor(($calcMovingTime - $calcMovingTimeDays * 86400)/3600); 
+     $calcMovingTimeMins =   floor(($calcMovingTime - $calcMovingTimeDays * 86400 - $calcMovingTimeHours * 3600)/60);
+      $avgElevationGrade = 0;
+     if ($calcTotalDistance > 0)
+      {$avgElevationGrade = $calcTotalElevation / $calcTotalDistance / 10; }
+         
+    
+             
+     
+                              
+     
     
 
+    ?>
+
+
+  
+    <table>
    
+    <tr>
+    <td colspan="2" class ="tucne">
+     Your stats:    
+    </td>
+    </tr>
+    
+    <tr>
+    <td>
+    Total number of <?php echo strtolower($actLabel) . "s"; ?>
+    </td>
+    <td>
+    <?php echo $calcNumberOfActivities;?>
+    </td>
+    </tr>
+
+    <tr>
+    <td>
+    Total moving time:
+    </td>
+    <td>
+    <?php echo $calcMovingTimeDays . "d ". $calcMovingTimeHours.  "hr " . $calcMovingTimeMins . "min";?>
+    </td>
+    </tr>   
+    
+    <tr>
+    <td>
+    Total number distance:
+    </td>
+    <td>
+    <?php echo round($calcTotalDistance,1) . $distUOM ;?>
+    </td>
+    </tr>
+    
+    <tr>
+    <td>
+    Total number elevation gain:
+    </td>
+    <td>
+    <?php echo round($calcTotalElevation * $elevKoef,1) . $elevUOM ;?>
+    </td>
+    </tr>
+    
+    <tr>
+    <td>
+    Average elevation gain grade:
+    </td>
+    <td>
+    <?php echo round ($avgElevationGrade,2) . "%";?>
+    </td>
+    </tr>  
  
- ?>     
+   <?php
+    if  (strtolower($selectedType) == "ride") 
+    { //"rides only"
+    ?>       
+     <tr>
+     <td>
+     Total crank revolutions:
+     </td>
+     <td>
+     <?php echo  $calcRevolution . " + extra ". round($calcDistForNoCadence,1) . $distUOM . " without cadence sensor <br>"; ?>
+    </td>
+    </tr>  
+    <?php
+    } //konec "rides only"
+    ?>
+    
+    <tr>
+    <td colspan="2">
+    <hr>
+    </td>  
+    </tr> 
+    
+    <tr>
+    <td>
+    Your Eddington number:
+    </td>
+    <td>
+    <?php echo $edn;?>
+    </td>
+    </tr> 
+    
+    <tr>
+    <td colspan="2">
+     <?php
+     $sfx = "";
+     if  ($missingRides1 > 1) {$sfx = "s";}
+      echo $actLabel . " " . $missingRides1 . " " . strtolower($actLabel) . $sfx . " of " . $planEN1 . $distUOM. " or more to reach " .  $planEN1 . "!";
+     ?> 
+    </td>  
+    </tr>
+    
+    <tr>
+    <td colspan="2">
+     <?php
+     $sfx = "";
+     if  ($missingRides2 > 1) {$sfx = "s";}
+      echo $actLabel . " " . $missingRides2 . " " . strtolower($actLabel) . $sfx . " of " . $planEN2 . $distUOM. " or more to reach " .  $planEN2 . "!";
+     ?> 
+    </td>  
+    </tr>  
+    
+    </table>
+
+
+    <!--pridam nejake grafy -->
+      
+    
+    <?php
+    
+    //usporadam podle velikost
+    usort($rides, array("Activity", "CompareDistances"));
+    
+     $ednGrafStart =   $edn; //zacatek
+     for ($i = $ednGrafStart; $i <= $ednGrafStart+$planAhead; $i++)
+      {
+    
+        $gedn =  PlanEddingtonNumber  ($selectedActivities, $i);
+        $distTogo[$i-$ednGrafStart] = $i;
+        $edgTogo[$i-$ednGrafStart] = $gedn;
+        
+     }
+
+    ?>
+    
      <script type="text/javascript">
     
     
@@ -357,14 +548,16 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       google.setOnLoadCallback(drawChart);
       function drawChart() {
       
-       //steps
+       //EDN steps
         var dataSteps = google.visualization.arrayToDataTable([
-          ['Distance',  'Rides to go' ],
+          ['Distance',
+          <?php echo "'" . $actLabel . "s to go'"   ?>
+            ],
           <?php
           
            for ($i = $ednGrafStart; $i <= $ednGrafStart+$planAhead; $i++)
            {
-            echo "['" . $dist[$i-$ednGrafStart] . "', " .  $edgTogo[$i-$ednGrafStart] . "],";            
+            echo "['" . $distTogo[$i-$ednGrafStart] . "', " .  $edgTogo[$i-$ednGrafStart] . "],";            
             }
            
           ?>
@@ -372,10 +565,10 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
         ]);
 
         var optionsSteps = {
-          title: 'Your lifetime Eddington number plans',
+          title: 'Your Eddington number plans',
           titlePosition: 'in',
-          vAxis: {title: 'Rides to go'},
-          hAxis: {title: 'kilometers'},
+          vAxis: {title: <?php echo "'" . $actLabel . "s to go'"   ?>},
+          hAxis: {title: <?php echo "'Distance [" . $distUOM . "]'"; ?>},
           isStacked: true,
           legend: { position: "none" }, 
            animation: {
@@ -388,26 +581,27 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
         var chartSteps = new google.visualization.SteppedAreaChart(document.getElementById('chart_div_steps'));
         chartSteps.draw(dataSteps, optionsSteps);
       
-       //histogram
+       //konec EDN steps
+         //histogram
        
           var dataHist = google.visualization.arrayToDataTable([
           ['Ride name', 'Length'],
             <?php
               
-               for ($ix = 0; $ix < sizeof ($lifetimeRides); $ix++)
+               for ($ix = 0; $ix < sizeof ($selectedActivities); $ix++)
                {
               // echo "['" . Ride_. $ix . "', " .   12 . "],"; 
-                echo "['" . $lifetimeRides[$ix]->name . "', " .   $lifetimeRides[$ix]->distance . "],"; 
+                echo "['" . $selectedActivities[$ix]->name . "', " .   $selectedActivities[$ix]->distance . "],"; 
                }   
                ?>
               ]);
                
           var optionsHist = {
-          title: 'Distribution of your rides',
+          title: <?php echo "'Distribution of your " . strtolower($actLabel) . "s'";?>,
           legend: { position: 'none' },
-           histogram: { bucketSize: 10 } ,
-          hAxis: {title: 'Rides lenght [km]'},
-          vAxis: {title: 'Rides ridden'},
+           histogram: { bucketSize: <?php echo $bucketSize; ?>} ,
+          hAxis: {title: <?php echo "'Distance [" . $distUOM . "]'"; ?>},
+          vAxis: {title: <?php echo "'Number of " . strtolower($actLabel) . "s'";?>},
            animation: {
             duration: 1000,
             startup: true , 
@@ -417,23 +611,26 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
 
         var chartHist = new google.visualization.Histogram(document.getElementById('chart_div_hist'));
         chartHist.draw(dataHist, optionsHist);
-                                                                            
+        //konec histogramu
+
+        //kadence
+                                                                                 
     //donut/cadence
      var dataCadence = google.visualization.arrayToDataTable([
           ['Task', 'Hours per Day'],
            <?php
                 $kmOnly = 0;
                 $totalRev = 0;
-               for ($ix = 0; $ix < sizeof ($lifetimeRides); $ix++)
+               for ($ix = 0; $ix < sizeof ($selectedActivities); $ix++)
                {  
-                 if  ($lifetimeRides[$ix]->revolutions > 0)
+                 if  ($selectedActivities[$ix]->revolutions > 0)
                  {          
-                echo "['" . $lifetimeRides[$ix]->name . "', " .   $lifetimeRides[$ix]->revolutions . "],";
-                $totalRev =  $totalRev + $lifetimeRides[$ix]->revolutions;
+                echo "['" . $selectedActivities[$ix]->name . "', " .   $selectedActivities[$ix]->revolutions . "],";
+                $totalRev =  $totalRev + $selectedActivities[$ix]->revolutions;
                 }
                 else
                 { //nemam otacky, jen pridam km
-                $kmOnly = $kmOnly + $lifetimeRides[$ix]->distance;
+                $kmOnly = $kmOnly + $selectedActivities[$ix]->distance;
                 } 
                } 
                
@@ -453,22 +650,25 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
 
         var chartCadence = new google.visualization.PieChart(document.getElementById('chart_div_cadence'));
         chartCadence.draw(dataCadence, optionsCadence);  
-      
-      }
-      
-      
-    </script>                
 
-
-  
- 
- 
- <div id="chart_div_steps" style="width: 800px; height: 600px;"></div>
- <div id="chart_div_hist" style="width: 800px; height: 600px;"></div>
- 
- <div class="chartWithOverlay">
+        //konec kadence
+       
+       
+       } //drawchar
+        
+           //EDN schody konec
+          </script>   
+     
+      <div id="chart_div_steps" style="width: 800px; height: 600px;"></div>  
+       <div id="chart_div_hist" style="width: 800px; height: 600px;"></div>  
+   
+    <?php
+    if  (strtolower($selectedType) == "ride") 
+    { //"rides only"
+    ?>     
+   <div class="chartWithOverlay">
     <div id="chart_div_cadence" style="width: 800px; height: 600px;"></div>
-   <div class="overlay">
+    <div class="overlay">
       <div style="font-family:'Verdana'; font-style: bold;  font-size: 32px;">
         <center><?php echo $totalRev; ?></center>        
       </div>
@@ -478,37 +678,34 @@ $predrokem = strtotime(date("Y-m-d", strtotime(date("Y-m-d") . " - 1 year")));
       </div>
     </div>  
     </div>
- 
-  <?php
- 
- //echo "<center> <b>Your lifetime Eddington number plans</b> </center>"; 
- //echo  "<div id=\"chart_div_steps\" style=\"width: 800px; height: 600px;\"></div>";
- //echo  "<div id=\"chart_div_hist\" style=\"width: 800px; height: 600px;\"></div>";
+    <?php
+    } //rides only
+    ?>
 
-
+    <?php
+    $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
+    $emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()) . "\r\n";
     
-
- //echo "<script>  javascript:drawChart(20); </script>";
- 
- echo "<font size=-1>";
- echo "This is just to please your obsessive side so many athletes have these days. To learn what Eddington number is, look ";
- echo "<a href=\"http://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling\">here</a> or ";
- echo "<a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">here</a>.";
-  echo "</font><p>";
- 
- 
- //spam: send email
-
-$headers = 'From: strava@rojicek.cz' . "\r\n" .
+    $emailbody = $emailbody .  "Time:" .  $selectedTime . "\r\n";
+    $emailbody = $emailbody .  "Type:" .  $selectedType . "\r\n";
+    $emailbody = $emailbody .  "Units:" .  $selectedUnit . "\r\n";
+    $emailbody = $emailbody .  "EDN:" .  $edn . "\r\n";
+    
+    
+    for ($ix = 0; $ix < sizeof ($selectedActivities); $ix++)
+          {
+                  $emailbody = $emailbody .  " - " . $selectedActivities[$ix]->name . " - " .   $selectedActivities[$ix]->distance . $distUOM . "\r\n"; 
+            }   
+    
+    $headers = 'From: strava@rojicek.cz' . "\r\n" .
     'Reply-To: jiri@rojicek.cz' . "\r\n" .
     'X-Mailer: PHP/' . phpversion();
 
-mail("jiri@rojicek.cz", "Eddington number calc", $emailbody, $headers);
+    mail("jiri@rojicek.cz", "Strava2", $emailbody, $headers);
  
- 
- 
- 
-   }//konec if autorizace
-?>
-          </body>
-          
+    } //login if
+    
+    ?>
+      
+</body>
+</html>

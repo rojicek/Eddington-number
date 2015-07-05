@@ -1,21 +1,32 @@
 <?php
  
 //Ride class
-  
-class Ride {
+$mileCoef = 1.609344;
+
+class Activity {
 	public $date;
+  public $timezone;
 	public $distance;
   public $name;
+  public $revolution;
+  public $elevation_gain;
+  public $moving_time;
+
 	
-	function Ride($date, $distance, $name, $revolutions) 
+	function Activity($date, $timezone, $type, $distance, $name, $moving_time, $elevation_gain, $revolutions) 
 	{
 		$this->date = $date;
-		$this->distance = $distance;
+    $this->timezone = $timezone;
+    $this->type = $type;
+		$this->distance = $distance;    
     $this->name = $name;
     $this->revolutions = $revolutions;
-    
+    $this->elevation_gain = $elevation_gain;
+    $this->moving_time = $moving_time;    
 	}   
-	static function CompareRides($r1, $r2)
+  
+  
+	static function CompareDistances($r1, $r2)
 	{
 		return ($r1->distance - $r2->distance);
 	}
@@ -26,7 +37,7 @@ class Ride {
 function GetEddingtonNumber($rides)
 {
    //minedn pro hledani dalsi jizdy - edn musi byt vetsi nez tohle cislo
-	 usort($rides, array("Ride", "CompareRides"));
+	 usort($rides, array("Activity", "CompareDistances"));
    
     
      
@@ -61,11 +72,11 @@ function GetEddingtonNumber($rides)
   for ($i = 0; $i< $pocetJizd; $i++)
   {  
    $stejnychAdelsich =  $pocetJizd - $i;  
- //  echo "budu porovnavat jestli " .$stejnychAdelsich .  ">=" . $rides[$i]->distance .   " (act EDN=". $edn .")<br>";
+   //echo "budu porovnavat jestli " .$stejnychAdelsich .  ">=" . $rides[$i]->distance .   " (act EDN=". $edn .")<br>";
     if ($stejnychAdelsich >= $rides[$i]->distance) 
          {                             
             $edn = $rides[$i]->distance; //aktualni EDN 
-        //    echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distance . " km -> EDN= ".$edn."<br>";            
+           // echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distance . " km -> EDN= ".$edn."<br>";            
         }
         else
         {
@@ -75,7 +86,7 @@ function GetEddingtonNumber($rides)
         $pocetDalsich =  $pocetJizd - $i;
         if ($edn < $pocetDalsich)
         {
-               // echo "beru pocet dalsich " .    $pocetDalsich . "<br>";
+      //          echo "beru pocet dalsich " .    $pocetDalsich . "<br>";
                 $edn =    $pocetDalsich;
                 
           }
@@ -87,30 +98,33 @@ function GetEddingtonNumber($rides)
   if ($edn < 0)   //nemam zadne jizdy
       $edn = 0;
      
+    //echo "vracim:". $edn . "<br>"; 
   return $edn;
 }     
 
 
  function PlanEddingtonNumber($rides, $planEDN)
 {
-   //sice tridim opakovane, ale pokud uz je pole setridene, tak to asi bude velmi rychle
-	 usort($rides, array("Ride", "CompareRides"));
+   //sice tridim opakovane, ale pokud uz je pole setridene, tak to asi bude velmi rychle	 
+   usort($rides, array("Activity", "CompareDistances"));
    
    $missingRides = $planEDN; //max pokud nemam jeste nic  
    $pocetJizd = sizeof  ($rides); 
+   //echo "pocet jizd = " .  $pocetJizd . "<br>";
+   
  
  //hledam pocet jizd pro planovane EDN
    for ($i = 0; $i< $pocetJizd; $i++)
    { 
       $stejnychAdelsich =  $pocetJizd - $i;  
       
-      //echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distance . " km/miles (plan=".$planEDN.")<br>";
+     // echo "ride# " . ($i+1) . " (". $stejnychAdelsich . ") " .  $rides[$i]->distance . " km/miles (plan=".$planEDN.")<br>";
       //hledam prvni jizdu, ktera je stejna nebo delsi nez plan
       if  ($rides[$i]->distance >= $planEDN)      
       {
        //muzu tu byt jen jednou!             
        $missingRides =  $planEDN -  $stejnychAdelsich ;
-     //  echo "I AM IN <br>";
+     //   echo "I AM IN <br>";
       // echo "missing rides =".$missingRides." (" . $planEDN . "-" . $stejnychAdelsich .") <br>";
        break;
       }
