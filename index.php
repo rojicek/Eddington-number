@@ -442,7 +442,7 @@ foreach ($comboUnits as $oneUnit)
     
     <tr>
     <td>
-    Total number distance:
+    Total distance:
     </td>
     <td>
     <?php echo round($calcTotalDistance,1) . $distUOM ;?>
@@ -451,7 +451,7 @@ foreach ($comboUnits as $oneUnit)
     
     <tr>
     <td>
-    Total number elevation gain:
+    Total elevation gain:
     </td>
     <td>
     <?php echo round($calcTotalElevation * $elevKoef,1) . $elevUOM ;?>
@@ -686,12 +686,19 @@ foreach ($comboUnits as $oneUnit)
     $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
     $emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()) . "\r\n";
     
-    $emailbody = $emailbody .  "Time:" .  $selectedTime . "\r\n";
-    $emailbody = $emailbody .  "Type:" .  $selectedType . "\r\n";
-    $emailbody = $emailbody .  "Units:" .  $selectedUnit . "\r\n";
-    $emailbody = $emailbody .  "EDN:" .  $edn . "\r\n";
-    
-    
+    $emailbody = $emailbody .  "Time: " .  $selectedTime . "\r\n";
+    $emailbody = $emailbody .  "Type: " .  $selectedType . "\r\n";
+    $emailbody = $emailbody .  "Units: " .  $selectedUnit . "\r\n";
+    $emailbody = $emailbody .  "EDN: " .  $edn . "\r\n";
+    $emailbody = $emailbody .  "next EDN: " .  $planEN1  . " = " .$missingRides1 . " more rides\r\n";   
+    $emailbody = $emailbody .  "next EDN: " .  $planEN2  . " = " .$missingRides2 . " more rides\r\n";
+    $emailbody = $emailbody .  "number of activities: " .  $calcNumberOfActivities . "\r\n";
+    $emailbody = $emailbody .  "total moving time: " .  $calcMovingTimeDays . "d ". $calcMovingTimeHours.  "hr " . $calcMovingTimeMins . "min \r\n";
+    $emailbody = $emailbody .  "total distance: " .   round($calcTotalDistance,1) . $distUOM . "\r\n";
+    $emailbody = $emailbody .  "total elevation gain: " .  round($calcTotalElevation * $elevKoef,1) . $elevUOM  . "\r\n";
+    $emailbody = $emailbody .  "average elevation gain grade: " .  round ($avgElevationGrade,2) . "%\r\n";
+    $emailbody = $emailbody .  "total crank revolutions: " .  $calcRevolution . " + extra ". round($calcDistForNoCadence,1) . $distUOM . " without cadence sensor \r\n";    
+                      
     for ($ix = 0; $ix < sizeof ($selectedActivities); $ix++)
           {
                   $emailbody = $emailbody .  " - " . $selectedActivities[$ix]->name . " - " .   $selectedActivities[$ix]->distance . $distUOM . "\r\n"; 
@@ -701,7 +708,7 @@ foreach ($comboUnits as $oneUnit)
     'Reply-To: jiri@rojicek.cz' . "\r\n" .
     'X-Mailer: PHP/' . phpversion();
 
-    mail("jiri@rojicek.cz", "Strava2", $emailbody, $headers);
+    mail("jiri@rojicek.cz", "Strava v2", $emailbody, $headers);
  
     } //login if
     
