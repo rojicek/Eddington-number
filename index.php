@@ -43,6 +43,7 @@ $planAhead = 15;
 $authToken =  $_SESSION['stravatoken'];
 
 
+<<<<<<< HEAD
 
 //try to reload array from session unless reload forced
 
@@ -55,6 +56,20 @@ if (($_GET["force"]=="yes")  || 1)
     unset($_SESSION['numberOfActivities']);
   }
 
+=======
+
+//try to reload array from session unless reload forced
+
+if (($_GET["force"]=="yes")  || 1)
+  {
+    //echo "force reload<br>";
+    for ($ixA = 0; $ixA < $_SESSION['numberOfActivities']; $ixA++)
+        {unset($_SESSION['activity'. $ixA]);}
+    
+    unset($_SESSION['numberOfActivities']);
+  }
+
+>>>>>>> origin/master
 if (isset($_SESSION['numberOfActivities']))
 {
  //echo "ctu ze session<br>";
@@ -521,6 +536,7 @@ foreach ($comboUnits as $oneUnit)
     </table>
 
 
+<<<<<<< HEAD
     <p><font size=-1>
     This is just to please your obsessive side so many athletes have these days. To learn what Eddington number is, look
     <a href="http://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling">here</a> or 
@@ -532,6 +548,9 @@ foreach ($comboUnits as $oneUnit)
     <!--pridam nejake grafy -->
      
      
+=======
+    <!--pridam nejake grafy -->
+>>>>>>> origin/master
       
     
     <?php
@@ -688,13 +707,23 @@ foreach ($comboUnits as $oneUnit)
       </div>
     </div>  
     </div>
+<<<<<<< HEAD
     
     <?php
     } //rides only
     ?>
 
+=======
+    <?php
+    } //rides only
+    ?>
+>>>>>>> origin/master
 
+    <?php
+    $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
+    $emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()) . "\r\n";
     
+<<<<<<< HEAD
 
     <?php
            
@@ -703,6 +732,8 @@ foreach ($comboUnits as $oneUnit)
     $emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
     $emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()) . "\r\n";
     
+=======
+>>>>>>> origin/master
     $emailbody = $emailbody .  "Time: " .  $selectedTime . "\r\n";
     $emailbody = $emailbody .  "Type: " .  $selectedType . "\r\n";
     $emailbody = $emailbody .  "Units: " .  $selectedUnit . "\r\n";
