@@ -1,4 +1,4 @@
 # Eddington-number
-php scripts to compute Eddington number from Strava record
+php scripts to compute various stats including Eddington number from Strava records
 
 just a fun 'project'
