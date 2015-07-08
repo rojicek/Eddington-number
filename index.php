@@ -32,6 +32,21 @@
 <?php
 
 //echo "JE TO ROZBITE!!<p>";
+$adresa = $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']; 
+//echo  $adresa. "<br>";
+//$wwwix =  strpos  ($adresa, "www.");
+
+//echo  "www pozice:" . $wwwix. "<br>";
+
+if  (substr($adresa, 0, 4) != "www.")
+  {
+  // echo "nove url = " . "www." . $adresa . "<br>";
+   $noveURL =   "Location: http://www." . $adresa;
+   header($noveURL);
+   die();
+  }
+  
+
 
 include 'ensupport.php';
 
@@ -70,7 +85,7 @@ if (isset($_SESSION['numberOfActivities']))
 
 if (is_null($authToken)) 
 {
-       echo "<p>To learn your cycling stats including <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";
+       echo "<p>To learn your cycling and running stats including <a href=\"http://triathlete-europe.competitor.com/2011/04/18/measuring-bike-miles-eddington-number\">Eddington number</a> &nbsp; <a href=\"auth.php\"><img src=\"LogInWithStrava.png\" width=\"159\" height=\"31\" align=\"middle\" alt=\"Log in with Strava\"></a></p>";
        echo "This link will ask you to grant permission to <b>read</b> some data about your rides from Strava through their interface.<br> This permission can be revoked at any time in Strava settings. I will never have access to your Strava credentials" ;         
 }   
 
