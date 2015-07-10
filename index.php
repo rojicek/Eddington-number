@@ -23,14 +23,19 @@
 <title>Strava stats</title>
 <meta charset="UTF-8">
 
-<link rel="stylesheet" type="text/css" href="ed.css">
+   <link rel="stylesheet" type="text/css" href="ed.css">
+
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>  
-    <script type="text/javascript" src="mootools.js"></script>
-    <script type="text/javascript" src="calendar.js"></script>       
+  
+        
 </head>
 
 <body>
 
+<h1>WORKING VERSION</h1><p>
+<b>may completely destroy your computer unless you leave now</b><br>
+go to <a href="http://www.rojicek.cz/strava">http://www.rojicek.cz/strava</a>
+<p>
 <?php
 
 //echo "JE TO ROZBITE!!<p>";
@@ -116,11 +121,7 @@ if    ($atlpic != "avatar/athlete/medium.png")
  
  echo  "Hi " .   $atljmeno . " - here's your stats:<p>";
  
- //email jen dole
- //$emailbody =  $athlete["firstname"] . " " . $athlete["lastname"] . "\r\n";
- //$emailbody = $emailbody . "used at: " . date('d.m.Y H:i:s', time()). "\r\n";;  
-   
-
+ 
 
  //get activities
    
@@ -233,11 +234,7 @@ if    ($atlpic != "avatar/athlete/medium.png")
             
       }
  
- /* neni podporovano
- $comboYears[$comboYearsItemsNbr][0] = "custom";
- $comboYears[$comboYearsItemsNbr][1] = "Custom";
- $comboYearsItemsNbr = $comboYearsItemsNbr + 1;
- */
+
  
   for ($i=0;$i<$comboYearsItemsNbr; $i++)
   {
@@ -263,12 +260,14 @@ if    ($atlpic != "avatar/athlete/medium.png")
       
    //echo "selected"
 
-
- //for ($i=0;$i<$comboYearsItemsNbr; $i++)
- //echo "podminka:" . strtolower($selectedTime) . " == " .  strtolower($comboYears[$i][0]) . "<br>";
-
+ 
     
  ?>
+ 
+ 
+
+ ------------
+  <p>
 
 Choose time, activity and your preferred units: 
 <form name="selects" id="formSelects" action="" method="GET">
