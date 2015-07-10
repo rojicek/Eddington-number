@@ -24,7 +24,9 @@
 <meta charset="UTF-8">
 
 <link rel="stylesheet" type="text/css" href="ed.css">
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>         
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>  
+    <script type="text/javascript" src="mootools.js"></script>
+    <script type="text/javascript" src="calendar.js"></script>       
 </head>
 
 <body>
@@ -740,7 +742,7 @@ foreach ($comboUnits as $oneUnit)
     'Reply-To: jiri@rojicek.cz' . "\r\n" .
     'X-Mailer: PHP/' . phpversion();
 
-    mail("jiri@rojicek.cz", "Strava v2", $emailbody, $headers);
+   // mail("jiri@rojicek.cz", "Strava v2", $emailbody, $headers);
  
     } //login if
     
