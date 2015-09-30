@@ -32,6 +32,8 @@
 <?php
 
 //echo "JE TO ROZBITE!!<p>";
+echo "Victor Sullivan version (w/ crpm list)<p>";
+
 $adresa = $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']; 
 //echo  $adresa. "<br>";
 //$wwwix =  strpos  ($adresa, "www.");
@@ -689,8 +691,15 @@ foreach ($comboUnits as $oneUnit)
    
     <?php
     if  (strtolower($selectedType) == "ride") 
-    { //"rides only"
-    ?>     
+    { 
+    
+          
+  
+    //usporadam podle poctu slapnuti  - nedelam kopii pole!
+    usort($selectedActivities, array("Activity", "CompareRevolutionsDesc"));
+        
+    ?>
+         
    <div class="chartWithOverlay">
     <div id="chart_div_cadence" style="width: 800px; height: 600px;"></div>
     <div class="overlay">
@@ -705,6 +714,20 @@ foreach ($comboUnits as $oneUnit)
     </div>
     
     <?php
+    
+    //print top x rides
+    $topCrank = 10;
+    if (sizeof  ($selectedActivities) <  $topCrank)
+       {$topCrank = sizeof  ($selectedActivities);}
+     
+      for ($tcix = 0; $tcix < $topCrank; $tcix++)
+      {
+             echo  "slapnuti=" . $selectedActivities[$tcix]->revolutions. "@". $selectedActivities[$tcix]->name . "<br>"; 
+      }
+     
+     
+     
+    
     } //rides only
     ?>
 
