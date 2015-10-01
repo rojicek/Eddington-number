@@ -30,6 +30,12 @@ class Activity {
 	{
 		return ($r1->distance - $r2->distance);
 	}
+  
+  static function CompareRevolutionsDesc($r1, $r2)
+	{
+		return ($r2->revolutions - $r1->revolutions);
+	}
+
 }
 
  
