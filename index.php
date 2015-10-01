@@ -32,7 +32,7 @@
 <?php
 
 //echo "JE TO ROZBITE!!<p>";
-echo "Victor Sullivan version (w/ crpm list)<p>";
+//echo "Victor Sullivan version (w/ crpm list)<p>";
 
 $adresa = $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']; 
 //echo  $adresa. "<br>";
@@ -172,9 +172,8 @@ if    ($atlpic != "avatar/athlete/medium.png")
 }
 } //nenacetl jsem ze session 
  
- // echo "pocet aktivit dole " . sizeof  ($allActivities) . "<br>";
-   
- // echo  $allActivities[0]->date->format('Y-m-d H:i:s') ."<br>"; 
+//  echo "pocet aktivit dole " . sizeof  ($allActivities) . "<br>";
+//  echo  $allActivities[0]->date->format('Y-m-d H:i:s') ."<br>"; 
  // echo  $allActivities[0]->timezone . "<br>";
  // echo  $allActivities[0]->type . "<br>";  
   
@@ -267,7 +266,9 @@ if    ($atlpic != "avatar/athlete/medium.png")
  //for ($i=0;$i<$comboYearsItemsNbr; $i++)
  //echo "podminka:" . strtolower($selectedTime) . " == " .  strtolower($comboYears[$i][0]) . "<br>";
 
-    
+ 
+   //echo  "point1:" . $allActivities[0]->date->format('Y-m-d H:i:s') ."<br>";
+      
  ?>
 
 Choose time, activity and your preferred units: 
@@ -371,7 +372,7 @@ foreach ($comboUnits as $oneUnit)
                }
         //echo "act " . $act->name ."; "  . $act->date->format("Y-m-d H:i:s") . "; dist:" . $dist . " elev: " . $elev . "<br>";
         
-        $selectedActivities[] = new Activity($act->datum,  $act->timezone, $act->type, floor($dist), $act->name, $act->moving_time, $elev, $act->revolutions);
+        $selectedActivities[] = new Activity($act->date,  $act->timezone, $act->type, floor($dist), $act->name, $act->moving_time, $elev, $act->revolutions);
         $calcNumberOfActivities = $calcNumberOfActivities + 1;        
         $calcTotalElevation = $calcTotalElevation +  $elev;
         $calcTotalDistance = $calcTotalDistance +  $dist;
@@ -421,7 +422,7 @@ foreach ($comboUnits as $oneUnit)
       {$avgElevationGrade = $calcTotalElevation / $calcTotalDistance / 10; }
          
     
-             
+    // echo  "point2:" . $allActivities[0]->date->format('Y-m-d H:i:s') ."<br>";        
      
                               
      
@@ -547,8 +548,7 @@ foreach ($comboUnits as $oneUnit)
 
 
     <!--pridam nejake grafy -->
-     
-     
+            
       
     
     <?php
@@ -566,6 +566,8 @@ foreach ($comboUnits as $oneUnit)
         
      }
 
+
+     //echo  "point3:" . $allActivities[0]->date->format('Y-m-d H:i:s') ."<br>";
     ?>
     
      <script type="text/javascript">
@@ -640,6 +642,8 @@ foreach ($comboUnits as $oneUnit)
         chartHist.draw(dataHist, optionsHist);
         //konec histogramu
 
+      
+
         //kadence
                                                                                  
     //donut/cadence
@@ -686,17 +690,15 @@ foreach ($comboUnits as $oneUnit)
            //EDN schody konec
           </script>   
      
+     
+     
       <div id="chart_div_steps" style="width: 800px; height: 600px;"></div>  
        <div id="chart_div_hist" style="width: 800px; height: 600px;"></div>  
    
     <?php
     if  (strtolower($selectedType) == "ride") 
     { 
-    
-          
-  
-    //usporadam podle poctu slapnuti  - nedelam kopii pole!
-    usort($selectedActivities, array("Activity", "CompareRevolutionsDesc"));
+                         
         
     ?>
          
@@ -713,21 +715,77 @@ foreach ($comboUnits as $oneUnit)
     </div>  
     </div>
     
+    
+    <table width="80%" style="border: 0px">
+    <tr>
+    <td class ="tucne" colspan="4">
+    TOP 10 crank revolutions per ride
+    </td>
+    </tr>
+    <tr>
+    <td class ="tucne" width="5%" align="center" valign="middle">#</td>
+    <td class ="tucne" width="10%" align="center" valign="middle">Date</td>
+    <td class ="tucne" width="65%" align="center" valign="middle">Ride</td>
+    <td class ="tucne" width="10%" align="center" valign="middle">Crank&nbsp;revs</td>
+    <td class ="tucne" width="10%" align="center" valign="middle">per&nbsp;km</td>
+    </tr>
+    
+    
     <?php
     
+    
+    //usporadam podle poctu slapnuti  - nedelam kopii pole!
+    usort($selectedActivities, array("Activity", "CompareRevolutionsDesc"));
+    
     //print top x rides
-    $topCrank = 10;
+    $topCrank = 10;   
+    
     if (sizeof  ($selectedActivities) <  $topCrank)
        {$topCrank = sizeof  ($selectedActivities);}
      
       for ($tcix = 0; $tcix < $topCrank; $tcix++)
       {
-             echo  "slapnuti=" . $selectedActivities[$tcix]->revolutions. "@". $selectedActivities[$tcix]->name . "<br>"; 
+             //echo  "x-slapnuti=" . $selectedActivities[$tcix]->revolutions. "@". $selectedActivities[$tcix]->name . "<br>";
+             
+             echo "<tr ";
+             if ($tcix % 2 == 0)
+             {
+             echo " style=\"background-color: rgb(250,250,100);\" ";             
+             }
+             echo ">";
+             
+             
+             
+             echo "<td align=\"center\" valign=\"middle\">";            
+             echo  "&nbsp;" . ($tcix+1) . "&nbsp;" ;
+             echo "</td>";
+             
+             echo "<td align=\"right\" valign=\"middle\">";             
+             $datum = preg_replace('/\s+/', '&nbsp;', $selectedActivities[$tcix]->date->format('j. M Y'));            
+             echo "&nbsp;" . $datum. "&nbsp;";                          
+             echo "</td>";
+             
+             echo "<td align=\"left\" valign=\"middle\">";            
+             echo  $selectedActivities[$tcix]->name;
+             echo "</td>";
+             
+             echo "<td align=\"right\" valign=\"middle\">";            
+             echo  $selectedActivities[$tcix]->revolutions;
+             echo "</td>";
+             
+             
+             echo "<td align=\"right\" valign=\"middle\">";            
+             echo  round(($selectedActivities[$tcix]->revolutions) / ($selectedActivities[$tcix]->distance), 0);
+             echo "</td>";
+             
+             echo "</tr>";
       }
+     ?>
+     
+     </table>
      
      
-     
-    
+    <?php
     } //rides only
     ?>
 
